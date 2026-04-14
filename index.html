@@ -98,7 +98,7 @@
       padding: 12px 18px;
       border-radius: 999px;
       border: 1px solid var(--border);
-      background: rgba(255,255,255,0.08);
+      background: rgba(255, 255, 255, 0.08);
       color: var(--text);
       font-size: 14px;
       font-weight: 700;
@@ -161,7 +161,7 @@
       text-align: left;
       padding: 13px 16px;
       cursor: pointer;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
       transition: background 0.18s ease;
     }
 
@@ -348,7 +348,7 @@
     .steps-list li {
       margin-bottom: 9px;
       line-height: 1.55;
-      color: rgba(255,255,255,0.92);
+      color: rgba(255, 255, 255, 0.92);
     }
 
     .recipe-image {
@@ -399,7 +399,7 @@
       align-items: center;
       justify-content: space-between;
       padding: 18px 20px;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     }
 
     .overlay-header h2 {
@@ -410,7 +410,7 @@
 
     .close-btn {
       border: 1px solid var(--border);
-      background: rgba(255,255,255,0.06);
+      background: rgba(255, 255, 255, 0.06);
       color: var(--text);
       width: 42px;
       height: 42px;
@@ -430,13 +430,14 @@
       min-width: 760px;
     }
 
-    .overlay-table th,
-    .overlay-table td {
-      text-align: left;
-      vertical-align: top;
-      padding: 14px 10px;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-    }
+.overlay-table th,
+.overlay-table td {
+  text-align: left;
+  vertical-align: top;
+  padding: 8px 8px; /* weniger Abstand */
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  line-height: 1.35; /* kompakter */
+}
 
     .overlay-table th {
       color: var(--accent);
@@ -444,9 +445,14 @@
       text-transform: uppercase;
       letter-spacing: 0.12em;
     }
+    
+    .overlay-table td:first-child {
+  width: 160px;
+  font-weight: 700;
+}
 
     .overlay-table td {
-      color: rgba(255,255,255,0.92);
+      color: rgba(255, 255, 255, 0.92);
       line-height: 1.5;
       white-space: pre-line;
     }
@@ -454,7 +460,7 @@
     .footer {
       margin-top: 18px;
       text-align: center;
-      color: rgba(255,255,255,0.4);
+      color: rgba(255, 255, 255, 0.4);
       font-size: 12px;
       text-transform: uppercase;
       letter-spacing: 0.18em;
@@ -542,7 +548,7 @@
         <button class="cocktail-tile visible" data-id="mai-tai" data-category="VACAY-VIBES">Mai Tai</button>
         <button class="cocktail-tile visible" data-id="zombie" data-category="VACAY-VIBES">Zombie</button>
         <button class="cocktail-tile visible" data-id="blue-lagoon" data-category="VACAY-VIBES">Blue Lagoon</button>
-        <button class="cocktail-tile visible" data-id="pina-colada" data-category="VACAY-VIBES">Pina Colada</button>
+        <button class="cocktail-tile visible" data-id="pina-colada" data-category="VACAY-VIBES">Piña Colada</button>
         <button class="cocktail-tile visible" data-id="frozen-daiquiri" data-category="VACAY-VIBES">Frozen Daiquiri Mango / Erdbeere</button>
         <button class="cocktail-tile visible" data-id="bahama-mama" data-category="VACAY-VIBES">Bahama Mama</button>
         <button class="cocktail-tile visible" data-id="solero" data-category="VACAY-VIBES">Solero</button>
@@ -631,7 +637,7 @@
         alcoholVolume: "ca. 16 % vol",
         image: "https://images.pexels.com/photos/28834354/pexels-photo-28834354.jpeg",
         ingredients: [
-          "6 cl Whiskey (standart Jim Beam)",
+          "6 cl Whiskey (Standard: Jim Beam)",
           "3 cl frischer Zitronensaft",
           "2 cl Zuckersirup",
           "1/2 Barspoon Eiweiß",
@@ -641,7 +647,7 @@
           "Alle Zutaten in den Shaker geben.",
           "Ohne Eis kräftig shaken, damit das Eiweiß aufschäumt.",
           "Danach Eis dazugeben und erneut kräftig shaken.",
-          "In ein Eis gefülltes Tumblerglas abseihen.",
+          "In ein mit Eis gefülltes Tumblerglas abseihen.",
           "Nach Wunsch garnieren und servieren."
         ]
       },
@@ -652,17 +658,17 @@
         alcoholVolume: "ca. 17 % vol",
         image: "https://images.pexels.com/photos/27580842/pexels-photo-27580842.jpeg",
         ingredients: [
-          "6 cl Whiskey (Standart Jim Beam)",
+          "6 cl Whiskey (Standard: Jim Beam)",
           "3 cl frischer Zitronensaft",
           "2 cl Zuckersirup",
           "1,5 cl Eiweiß optional",
           "1,5 cl Rotwein oder Rotweinaperitif zum Floaten"
         ],
         steps: [
-          "Whiskey, Zitrone, Zucker und optional Eiweiß in den Shaker geben.",
-          "Erst ohne Eis shaken, dann mit Eis erneut shaken.",
+          "Whiskey, Zitronensaft, Zuckersirup und optional Eiweiß in den Shaker geben.",
+          "Zuerst ohne Eis shaken, danach mit Eis erneut kräftig shaken.",
           "In ein Glas auf Eis abseihen.",
-          "Den Rotweinaperitif langsam oben auf den Drink floaten.",
+          "Den Rotwein oder Aperitif langsam oben auf den Drink floaten.",
           "Direkt servieren."
         ]
       },
@@ -678,14 +684,14 @@
           "1,5 cl frischer Zitronensaft",
           "1,5 cl Zuckersirup",
           "2 cl Eiweiß",
-          "ggf Saline",
+          "ggf. Saline",
           "3 Tropfen Bitters"
         ],
         steps: [
-          "Pisco, Limettensaft, Zucker, Salz und Eiweiß in den Shaker geben.",
+          "Pisco, Limettensaft, Zitronensaft, Zuckersirup, Eiweiß und ggf. Saline in den Shaker geben.",
           "Zuerst trocken shaken.",
-          "Danach Eis zugeben und nochmal kräftig shaken.",
-          "In ein mit Eis gefüllten Tumblr abseihen.",
+          "Danach Eis zugeben und erneut kräftig shaken.",
+          "In ein mit Eis gefülltes Glas abseihen.",
           "Zum Schluss einige Tropfen Bitters auf den Schaum geben."
         ]
       },
@@ -703,9 +709,9 @@
           "10 cl Orangensaft"
         ],
         steps: [
-          "Alle Zutaten in einen Shaker mit Eis geben.",
+          "Alle Zutaten mit Eis in einen Shaker geben.",
           "Kräftig shaken.",
-          "In ein Glas kippen.",
+          "In ein Glas auf Eis abseihen.",
           "Servieren."
         ]
       },
@@ -722,9 +728,9 @@
           "5-7 cl Soda Water"
         ],
         steps: [
-          "Gin, Zitrone und Zucker mit Eis shaken.",
+          "Gin, Zitronensaft und Zuckersirup mit Eis shaken.",
           "In ein Glas abseihen.",
-          "Mit Sprudel auffüllen.",
+          "Mit Soda Water auffüllen.",
           "Kurz umrühren.",
           "Direkt servieren."
         ]
@@ -736,7 +742,7 @@
         alcoholVolume: "ca. 18 % vol",
         image: "https://images.unsplash.com/photo-1546173159-315724a31696?auto=format&fit=crop&w=300&q=80",
         ingredients: [
-          "6cl Rum - Mische",
+          "6 cl Rum-Mischung",
           "2,25 cl frischer Limettensaft",
           "1,5 cl Mandelsirup",
           "7 cl Ananassaft"
@@ -744,7 +750,7 @@
         steps: [
           "Alle Zutaten mit Eis in den Shaker geben.",
           "Kräftig shaken.",
-          "In ein Glas abseihen.",
+          "In ein Glas auf Eis abseihen.",
           "Nach Wunsch garnieren."
         ]
       },
@@ -755,11 +761,11 @@
         alcoholVolume: "ca. 22 % vol",
         image: "https://www.gourmet-magazin.de/fileadmin/_processed_/e/f/csm_zombie-1_b2536db7ab.jpg",
         ingredients: [
-          "6 cl Rum - Vormische",
+          "6 cl Rum-Vormischung",
           "3 cl Ananassaft",
           "2 cl Limettensaft",
           "1 cl Grenadine",
-          "2 Dashes Orange bitters"
+          "2 Dashes Orange Bitters"
         ],
         steps: [
           "Alle Zutaten mit Eis shaken.",
@@ -789,15 +795,15 @@
       },
 
       "pina-colada": {
-        title: "Pina Colada",
+        title: "Piña Colada",
         category: "Vacay Vibes",
         alcoholVolume: "ca. 9 % vol",
         image: "https://upload.wikimedia.org/wikipedia/commons/f/f3/Pina_colada_7093.JPG",
         ingredients: [
           "6 cl heller Rum",
-          "2cl Kokossirup",
+          "2 cl Kokossirup",
           "2 cl Sahne",
-          "7cl Ananassaft"
+          "7 cl Ananassaft"
         ],
         steps: [
           "Alle Zutaten mit Eis in den Shaker geben.",
@@ -881,7 +887,7 @@
           "Alle Zutaten in ein Rührglas mit Eis geben.",
           "Gut kalt rühren.",
           "In ein Tumblerglas auf Eis abseihen.",
-          "Orangen peel ausdrücken und in den drink als garnish."
+          "Mit Orangenzeste garnieren."
         ]
       },
 
@@ -893,10 +899,10 @@
         ingredients: [
           "5 cl Gin",
           "2 cl trockener Wermut",
-          "Saline"
+          "2-3 Tropfen Saline"
         ],
         steps: [
-          "Gin und Wermut in ein Rührglas mit Eis geben, 2-3 Tropfen Saline.",
+          "Gin, trockenen Wermut und Saline in ein Rührglas mit Eis geben.",
           "Sehr kalt rühren.",
           "In eine gekühlte Cocktailschale abseihen.",
           "Mit Olive garnieren.",
@@ -918,7 +924,7 @@
           "Alle Zutaten in ein Rührglas mit Eis geben.",
           "Gut kalt rühren.",
           "In ein Tumblerglas auf Eis abseihen.",
-          "Orangen peel ausdrücken und in den drink als garnish."
+          "Mit Orangenzeste garnieren."
         ]
       },
 
@@ -928,7 +934,7 @@
         alcoholVolume: "ca. 18 % vol",
         image: "https://images.rawpixel.com/image_social_portrait/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvZnJzd2VldF90ZWFfd2l0aF9sZW1vbi1pbWFnZS1reWNmYmM1dC5qcGc.jpg",
         ingredients: [
-          "7cl Vormische",
+          "7 cl Vormischung",
           "2 cl Zitronensaft",
           "1 cl Lime Juice",
           "3 cl Orangensaft",
@@ -938,7 +944,7 @@
           "Alle Zutaten außer Cola mit Eis in den Shaker geben.",
           "Kurz shaken.",
           "In ein großes Glas auf Eis geben.",
-          "Mit Cola toppen.",
+          "Mit Cola auffüllen.",
           "Kurz umrühren und servieren."
         ]
       },
@@ -955,10 +961,10 @@
           "2 Gurkenscheiben"
         ],
         steps: [
-          "Vodka und Limette in ein Glas auf Eis geben.",
+          "Vodka und Limettensaft in ein Glas auf Eis geben.",
           "Mit Ginger Beer auffüllen.",
           "Kurz umrühren.",
-          "Mit Gurke, Limettenschnitz u ggf Minze servieren."
+          "Mit Gurke und Limette servieren."
         ]
       },
 
@@ -970,18 +976,18 @@
         ingredients: [
           "5 cl weißer Rum",
           "3-4 Limettenachtel",
-          "1 Spoon Rohrzucker",
-          "8–10 Minzblätter",
+          "1 Barlöffel Rohrzucker",
+          "8-10 Minzblätter",
           "Soda Water zum Auffüllen"
         ],
         steps: [
-          "Limette, Zucker und Minze ins Glas geben.",
-          "Leicht muddeln.",
-          "crushed Eis und Rum zugeben.",
-          "ORDENTLICH! umrühren (kann auch geshaked werden!).",
-          "Mit Sprudelwasser auffüllen.",
-          "Etwas crushed Ice on Top",
-          "Mit Minkrone garnieren"
+          "Limette, Rohrzucker und Minze ins Glas geben.",
+          "Leicht andrücken.",
+          "Crushed Ice und Rum zugeben.",
+          "Ordentlich umrühren.",
+          "Mit Soda Water auffüllen.",
+          "Etwas Crushed Ice on top geben.",
+          "Mit Minze garnieren."
         ]
       },
 
@@ -997,11 +1003,11 @@
         ],
         steps: [
           "Limette und Rohrzucker ins Glas geben.",
-          "Kräftig Muddeln (nur drücken, nicht drehen!).",
-          "Crushed Eis hinzufügen.",
+          "Kräftig andrücken, nicht drehen.",
+          "Crushed Ice hinzufügen.",
           "Cachaça dazugeben.",
-          "Gut umrühren",
-          "Crushed Eis On Top und mit Limette garnieren"
+          "Gut umrühren.",
+          "Mit weiterem Crushed Ice und Limette servieren."
         ]
       },
 
@@ -1018,8 +1024,7 @@
         ],
         steps: [
           "Ein Glas mit Eis füllen.",
-          "Rum und Limettensaft + Achtel hineingeben.",
-          "Mit Eis füllen",
+          "Rum, Limettensaft und Limettenachtel hineingeben.",
           "Mit Cola auffüllen.",
           "Kurz umrühren und servieren."
         ]
@@ -1037,9 +1042,8 @@
           "1 cl Grenadine"
         ],
         steps: [
-          "Tequila, Orangensaft und Zitrone mit Eis in Shaker geben.",
-          "Kurz shaken.",
-          "In Glas umfüllen",
+          "Tequila, Orangensaft und Zitronensaft mit Eis shaken.",
+          "In ein Glas auf Eis abseihen.",
           "Grenadine langsam eingießen.",
           "Servieren."
         ]
@@ -1060,7 +1064,7 @@
         ],
         steps: [
           "Alle Zutaten mit Eis shaken.",
-          "In das Shakeglas umkippen.",
+          "In ein Glas auf Eis abseihen.",
           "Servieren."
         ]
       },
@@ -1078,7 +1082,7 @@
           "8 cl Maracujasaft"
         ],
         steps: [
-          "Alle Zutaten in den Shaker mit Eis geben.",
+          "Alle Zutaten mit Eis in den Shaker geben.",
           "Kräftig shaken.",
           "In ein Glas auf Eis abseihen.",
           "Servieren."
@@ -1118,7 +1122,7 @@
           "4 cl Sekt separat"
         ],
         steps: [
-          "Alles ausser Sekt mit Eis shaken.",
+          "Alles außer Sekt mit Eis shaken.",
           "In ein Martiniglas abseihen.",
           "Den Sekt separat dazu servieren."
         ]
@@ -1138,8 +1142,8 @@
         steps: [
           "Alle Zutaten mit Eis in den Shaker geben.",
           "Sehr kräftig shaken.",
-          "In eine Schale abseihen.",
-          "Roonburg Schablone mit Pulver bestäuber."
+          "In eine gekühlte Schale abseihen.",
+          "Nach Wunsch mit Schablone bestäuben."
         ]
       },
 
@@ -1155,9 +1159,9 @@
           "0,5 cl Zuckersirup optional"
         ],
         steps: [
-          "Schale mit Salzrand versehen.",
+          "Das Glas mit einem Salzrand versehen.",
           "Alle Zutaten mit Eis shaken.",
-          "In Glas abseihen."
+          "In das vorbereitete Glas abseihen."
         ]
       },
 
@@ -1193,7 +1197,7 @@
         ],
         steps: [
           "Ein Glas mit Eis füllen.",
-          "Limette und Maracujasaft zugeben.",
+          "Limettensaft und Maracujasaft zugeben.",
           "Mit Ginger Ale auffüllen.",
           "Kurz umrühren und servieren."
         ]
@@ -1282,7 +1286,7 @@
       }
 
       const matches = Object.entries(recipes)
-        .filter(([id, recipe]) => recipeMatchesSearch(recipe, term))
+        .filter(([, recipe]) => recipeMatchesSearch(recipe, term))
         .sort((a, b) => a[1].title.localeCompare(b[1].title, "de"))
         .slice(0, 8);
 
