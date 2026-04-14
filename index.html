@@ -614,7 +614,7 @@
           <thead>
             <tr>
               <th>Cocktail</th>
-              <th>Alkohol</th>
+    
               <th>Inhaltsliste</th>
             </tr>
           </thead>
@@ -1365,7 +1365,6 @@
       overlayTableBody.innerHTML = sortedRecipes.map(recipe => `
         <tr>
           <td>${recipe.title}</td>
-          <td>${recipe.alcoholVolume || "-"}</td>
           <td>${recipe.ingredients.join("\n")}</td>
         </tr>
       `).join("");
