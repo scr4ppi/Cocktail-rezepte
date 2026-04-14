@@ -89,6 +89,28 @@
       display: inline-block;
     }
 
+    .header-actions {
+      margin-top: 14px;
+      text-align: center;
+    }
+
+    .ingredients-btn {
+      padding: 12px 18px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .ingredients-btn:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
     .search-wrap {
       margin-bottom: 14px;
     }
@@ -345,6 +367,90 @@
       display: block;
     }
 
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.84);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 20px;
+    }
+
+    .overlay.active {
+      display: flex;
+    }
+
+    .overlay-content {
+      width: min(1100px, 100%);
+      max-height: 90vh;
+      background: rgba(10, 10, 10, 0.98);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .overlay-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .overlay-header h2 {
+      margin: 0;
+      font-size: 22px;
+      color: var(--accent);
+    }
+
+    .close-btn {
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      width: 42px;
+      height: 42px;
+      border-radius: 999px;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .overlay-table-wrap {
+      overflow: auto;
+      padding: 0 20px 20px;
+    }
+
+    .overlay-table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 760px;
+    }
+
+    .overlay-table th,
+    .overlay-table td {
+      text-align: left;
+      vertical-align: top;
+      padding: 14px 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .overlay-table th {
+      color: var(--accent);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .overlay-table td {
+      color: rgba(255,255,255,0.92);
+      line-height: 1.5;
+      white-space: pre-line;
+    }
+
     .footer {
       margin-top: 18px;
       text-align: center;
@@ -393,6 +499,11 @@
     <section class="hero">
       <div class="logo-wrap">
         <img src="https://roonburg.de/media/default/assets/config/roonburg/images/roonburg-logo.png" alt="Roonburg Logo" />
+        <div class="header-actions">
+          <button id="openIngredientsBtn" class="ingredients-btn" type="button">
+            Inhaltsliste öffnen
+          </button>
+        </div>
       </div>
 
       <div class="search-wrap">
@@ -491,607 +602,630 @@
     <footer class="footer">Roonburg interne Rezeptseite</footer>
   </main>
 
+  <div id="ingredientsOverlay" class="overlay">
+    <div class="overlay-content">
+      <div class="overlay-header">
+        <h2>Inhaltslisten</h2>
+        <button id="closeIngredientsBtn" class="close-btn" type="button">×</button>
+      </div>
+
+      <div class="overlay-table-wrap">
+        <table class="overlay-table">
+          <thead>
+            <tr>
+              <th>Cocktail</th>
+              <th>Alkohol</th>
+              <th>Inhaltsliste</th>
+            </tr>
+          </thead>
+          <tbody id="overlayTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
   <script>
-const recipes = {
-  "whiskey-sour": {
-    title: "Whiskey Sour",
-    category: "Fresh & Zesty",
-    alcoholVolume: "ca. 16 % vol",
-    image: "https://images.pexels.com/photos/28834354/pexels-photo-28834354.jpeg",
-    ingredients: [
-      "6 cl Bourbon Whiskey",
-      "3 cl frischer Zitronensaft",
-      "2 cl Zuckersirup",
-      "1,5 cl Eiweiß",
-      "3 Dashes Angostura Bitters"
-    ],
-    steps: [
-      "Alle Zutaten in den Shaker geben.",
-      "Ohne Eis kräftig shaken, damit das Eiweiß aufschäumt.",
-      "Danach Eis dazugeben und erneut kräftig shaken.",
-      "In ein Tumblerglas abseihen.",
-      "Nach Wunsch garnieren und servieren."
-    ]
-  },
+    const recipes = {
+      "whiskey-sour": {
+        title: "Whiskey Sour",
+        category: "Fresh & Zesty",
+        alcoholVolume: "ca. 16 % vol",
+        image: "https://images.pexels.com/photos/28834354/pexels-photo-28834354.jpeg",
+        ingredients: [
+          "6 cl Bourbon Whiskey",
+          "3 cl frischer Zitronensaft",
+          "2 cl Zuckersirup",
+          "1,5 cl Eiweiß",
+          "3 Dashes Angostura Bitters"
+        ],
+        steps: [
+          "Alle Zutaten in den Shaker geben.",
+          "Ohne Eis kräftig shaken, damit das Eiweiß aufschäumt.",
+          "Danach Eis dazugeben und erneut kräftig shaken.",
+          "In ein Tumblerglas abseihen.",
+          "Nach Wunsch garnieren und servieren."
+        ]
+      },
 
-  "new-york-sour": {
-    title: "New York Sour - Twist",
-    category: "Fresh & Zesty",
-    alcoholVolume: "ca. 17 % vol",
-    image: "https://images.pexels.com/photos/27580842/pexels-photo-27580842.jpeg",
-    ingredients: [
-      "6 cl Bourbon Whiskey",
-      "3 cl frischer Zitronensaft",
-      "2 cl Zuckersirup",
-      "1,5 cl Eiweiß optional",
-      "1,5 cl Rotwein oder Rotweinaperitif zum Floaten"
-    ],
-    steps: [
-      "Whiskey, Zitrone, Zucker und optional Eiweiß in den Shaker geben.",
-      "Erst ohne Eis shaken, dann mit Eis erneut shaken.",
-      "In ein Glas auf Eis abseihen.",
-      "Den Rotweinaperitif langsam oben auf den Drink floaten.",
-      "Direkt servieren."
-    ]
-  },
+      "new-york-sour": {
+        title: "New York Sour - Twist",
+        category: "Fresh & Zesty",
+        alcoholVolume: "ca. 17 % vol",
+        image: "https://images.pexels.com/photos/27580842/pexels-photo-27580842.jpeg",
+        ingredients: [
+          "6 cl Bourbon Whiskey",
+          "3 cl frischer Zitronensaft",
+          "2 cl Zuckersirup",
+          "1,5 cl Eiweiß optional",
+          "1,5 cl Rotwein oder Rotweinaperitif zum Floaten"
+        ],
+        steps: [
+          "Whiskey, Zitrone, Zucker und optional Eiweiß in den Shaker geben.",
+          "Erst ohne Eis shaken, dann mit Eis erneut shaken.",
+          "In ein Glas auf Eis abseihen.",
+          "Den Rotweinaperitif langsam oben auf den Drink floaten.",
+          "Direkt servieren."
+        ]
+      },
 
-  "pisco-sour": {
-    title: "Pisco Sour",
-    category: "Fresh & Zesty",
-    alcoholVolume: "ca. 18 % vol",
-    image: "https://plus.unsplash.com/premium_photo-1661346164645-df6222a57457?q=80&w=774&auto=format&fit=crop",
-    ingredients: [
-      "6 cl Pisco",
-      "2,25 cl frischer Limettensaft",
-      "1,5 cl frischer Zitronensaft",
-      "1,5 cl Zuckersirup",
-      "2 cl Eiweiß",
-      "3 Tropfen Bitters"
-    ],
-    steps: [
-      "Pisco, Limettensaft, Zucker und Eiweiß in den Shaker geben.",
-      "Zuerst trocken shaken.",
-      "Danach Eis zugeben und nochmal kräftig shaken.",
-      "In ein Glas abseihen.",
-      "Zum Schluss einige Tropfen Bitters auf den Schaum geben."
-    ]
-  },
+      "pisco-sour": {
+        title: "Pisco Sour",
+        category: "Fresh & Zesty",
+        alcoholVolume: "ca. 18 % vol",
+        image: "https://plus.unsplash.com/premium_photo-1661346164645-df6222a57457?q=80&w=774&auto=format&fit=crop",
+        ingredients: [
+          "6 cl Pisco",
+          "2,25 cl frischer Limettensaft",
+          "1,5 cl frischer Zitronensaft",
+          "1,5 cl Zuckersirup",
+          "2 cl Eiweiß",
+          "3 Tropfen Bitters"
+        ],
+        steps: [
+          "Pisco, Limettensaft, Zucker und Eiweiß in den Shaker geben.",
+          "Zuerst trocken shaken.",
+          "Danach Eis zugeben und nochmal kräftig shaken.",
+          "In ein Glas abseihen.",
+          "Zum Schluss einige Tropfen Bitters auf den Schaum geben."
+        ]
+      },
 
-  "melon-sour": {
-    title: "Melon Sour",
-    category: "Fresh & Zesty",
-    alcoholVolume: "ca. 11 % vol",
-    image: "https://images.unsplash.com/photo-1563223771-375783ee91ad?w=500&auto=format&fit=crop&q=60",
-    ingredients: [
-      "4,5 cl Vodka",
-      "2 cl Melonenlikör",
-      "1 cl Zitronensaft",
-      "2 cl Melonensirup",
-      "10 cl Orangensaft"
-    ],
-    steps: [
-      "Alle Zutaten in einen Shaker mit Eis geben.",
-      "Kräftig shaken.",
-      "In ein Glas auf frisches Eis abseihen.",
-      "Bei Bedarf kurz umrühren.",
-      "Servieren."
-    ]
-  },
+      "melon-sour": {
+        title: "Melon Sour",
+        category: "Fresh & Zesty",
+        alcoholVolume: "ca. 11 % vol",
+        image: "https://images.unsplash.com/photo-1563223771-375783ee91ad?w=500&auto=format&fit=crop&q=60",
+        ingredients: [
+          "4,5 cl Vodka",
+          "2 cl Melonenlikör",
+          "1 cl Zitronensaft",
+          "2 cl Melonensirup",
+          "10 cl Orangensaft"
+        ],
+        steps: [
+          "Alle Zutaten in einen Shaker mit Eis geben.",
+          "Kräftig shaken.",
+          "In ein Glas auf frisches Eis abseihen.",
+          "Bei Bedarf kurz umrühren.",
+          "Servieren."
+        ]
+      },
 
-  "gin-fizz": {
-    title: "Gin Fizz",
-    category: "Fresh & Zesty",
-    alcoholVolume: "ca. 13 % vol",
-    image: "https://www.honest-rare.de/images/blog/11/gin-fizz-rezept.jpeg",
-    ingredients: [
-      "5 cl Gin",
-      "2,25 cl frischer Zitronensaft",
-      "1,5 cl Zuckersirup",
-      "10–12 cl Soda Water"
-    ],
-    steps: [
-      "Gin, Zitrone und Zucker mit Eis shaken.",
-      "In ein Glas abseihen.",
-      "Mit Sprudel auffüllen.",
-      "Kurz umrühren.",
-      "Direkt servieren."
-    ]
-  },
+      "gin-fizz": {
+        title: "Gin Fizz",
+        category: "Fresh & Zesty",
+        alcoholVolume: "ca. 13 % vol",
+        image: "https://www.honest-rare.de/images/blog/11/gin-fizz-rezept.jpeg",
+        ingredients: [
+          "5 cl Gin",
+          "2,25 cl frischer Zitronensaft",
+          "1,5 cl Zuckersirup",
+          "10–12 cl Soda Water"
+        ],
+        steps: [
+          "Gin, Zitrone und Zucker mit Eis shaken.",
+          "In ein Glas abseihen.",
+          "Mit Sprudel auffüllen.",
+          "Kurz umrühren.",
+          "Direkt servieren."
+        ]
+      },
 
-  "mai-tai": {
-    title: "Mai Tai",
-    category: "Vacay Vibes",
-    alcoholVolume: "ca. 18 % vol",
-    image: "https://images.unsplash.com/photo-1546173159-315724a31696?auto=format&fit=crop&w=300&q=80",
-    ingredients: [
-      "3 cl gereifter Rum",
-      "3 cl dunkler oder aromatischer Rum",
-      "1,5 cl Orange Curaçao",
-      "2,25 cl frischer Limettensaft",
-      "0,75 cl Orgeat",
-      "0,75 cl Zuckersirup"
-    ],
-    steps: [
-      "Alle Zutaten mit Eis in den Shaker geben.",
-      "Kräftig shaken.",
-      "In ein Glas mit frischem Eis abseihen.",
-      "Nach Wunsch garnieren.",
-      "Servieren."
-    ]
-  },
+      "mai-tai": {
+        title: "Mai Tai",
+        category: "Vacay Vibes",
+        alcoholVolume: "ca. 18 % vol",
+        image: "https://images.unsplash.com/photo-1546173159-315724a31696?auto=format&fit=crop&w=300&q=80",
+        ingredients: [
+          "3 cl gereifter Rum",
+          "3 cl dunkler oder aromatischer Rum",
+          "1,5 cl Orange Curaçao",
+          "2,25 cl frischer Limettensaft",
+          "0,75 cl Orgeat",
+          "0,75 cl Zuckersirup"
+        ],
+        steps: [
+          "Alle Zutaten mit Eis in den Shaker geben.",
+          "Kräftig shaken.",
+          "In ein Glas mit frischem Eis abseihen.",
+          "Nach Wunsch garnieren.",
+          "Servieren."
+        ]
+      },
 
-  "zombie": {
-    title: "Zombie",
-    category: "Vacay Vibes",
-    alcoholVolume: "ca. 22 % vol",
-    image: "https://www.gourmet-magazin.de/fileadmin/_processed_/e/f/csm_zombie-1_b2536db7ab.jpg",
-    ingredients: [
-      "3 cl gereifter Rum",
-      "2,5 cl goldener Rum",
-      "2 cl Overproof Rum",
-      "1,5 cl Falernum",
-      "3 cl Ananassaft",
-      "2 cl frischer Limettensaft",
-      "1 cl Grapefruitsaft",
-      "0,5 cl Grenadine",
-      "2 Dashes Absinthe"
-    ],
-    steps: [
-      "Alle Zutaten mit Eis shaken.",
-      "In ein großes Glas auf Eis geben.",
-      "Kurz umrühren.",
-      "Optional dekorieren.",
-      "Servieren."
-    ]
-  },
+      "zombie": {
+        title: "Zombie",
+        category: "Vacay Vibes",
+        alcoholVolume: "ca. 22 % vol",
+        image: "https://www.gourmet-magazin.de/fileadmin/_processed_/e/f/csm_zombie-1_b2536db7ab.jpg",
+        ingredients: [
+          "3 cl gereifter Rum",
+          "2,5 cl goldener Rum",
+          "2 cl Overproof Rum",
+          "1,5 cl Falernum",
+          "3 cl Ananassaft",
+          "2 cl frischer Limettensaft",
+          "1 cl Grapefruitsaft",
+          "0,5 cl Grenadine",
+          "2 Dashes Absinthe"
+        ],
+        steps: [
+          "Alle Zutaten mit Eis shaken.",
+          "In ein großes Glas auf Eis geben.",
+          "Kurz umrühren.",
+          "Optional dekorieren.",
+          "Servieren."
+        ]
+      },
 
-  "blue-lagoon": {
-    title: "Blue Lagoon",
-    category: "Vacay Vibes",
-    alcoholVolume: "ca. 10 % vol",
-    image: "https://upload.wikimedia.org/wikipedia/commons/5/54/Adios_Motherfucker_Cocktail.jpg",
-    ingredients: [
-      "4 cl Vodka",
-      "2 cl Blue Curaçao",
-      "2 cl Zitronensaft",
-      "10 cl Sprite oder Zitronenlimonade"
-    ],
-    steps: [
-      "Vodka, Blue Curaçao und Zitronensaft mit Eis ins Glas geben.",
-      "Mit Sprite auffüllen.",
-      "Kurz umrühren.",
-      "Direkt servieren."
-    ]
-  },
+      "blue-lagoon": {
+        title: "Blue Lagoon",
+        category: "Vacay Vibes",
+        alcoholVolume: "ca. 10 % vol",
+        image: "https://upload.wikimedia.org/wikipedia/commons/5/54/Adios_Motherfucker_Cocktail.jpg",
+        ingredients: [
+          "4 cl Vodka",
+          "2 cl Blue Curaçao",
+          "2 cl Zitronensaft",
+          "10 cl Sprite oder Zitronenlimonade"
+        ],
+        steps: [
+          "Vodka, Blue Curaçao und Zitronensaft mit Eis ins Glas geben.",
+          "Mit Sprite auffüllen.",
+          "Kurz umrühren.",
+          "Direkt servieren."
+        ]
+      },
 
-  "pina-colada": {
-    title: "Pina Colada",
-    category: "Vacay Vibes",
-    alcoholVolume: "ca. 9 % vol",
-    image: "https://upload.wikimedia.org/wikipedia/commons/f/f3/Pina_colada_7093.JPG",
-    ingredients: [
-      "6 cl heller Rum",
-      "9 cl Ananassaft",
-      "2,25 cl Cream of Coconut",
-      "1,5 cl Limettensaft",
-      "0,75 cl Sahne"
-    ],
-    steps: [
-      "Alle Zutaten mit Eis in den Mixer oder Shaker geben.",
-      "Cremig mixen oder kräftig shaken.",
-      "In ein großes Glas füllen.",
-      "Nach Wunsch dekorieren.",
-      "Servieren."
-    ]
-  },
+      "pina-colada": {
+        title: "Pina Colada",
+        category: "Vacay Vibes",
+        alcoholVolume: "ca. 9 % vol",
+        image: "https://upload.wikimedia.org/wikipedia/commons/f/f3/Pina_colada_7093.JPG",
+        ingredients: [
+          "6 cl heller Rum",
+          "9 cl Ananassaft",
+          "2,25 cl Cream of Coconut",
+          "1,5 cl Limettensaft",
+          "0,75 cl Sahne"
+        ],
+        steps: [
+          "Alle Zutaten mit Eis in den Mixer oder Shaker geben.",
+          "Cremig mixen oder kräftig shaken.",
+          "In ein großes Glas füllen.",
+          "Nach Wunsch dekorieren.",
+          "Servieren."
+        ]
+      },
 
-  "frozen-daiquiri": {
-    title: "Frozen Daiquiri Mango / Erdbeere",
-    category: "Vacay Vibes",
-    alcoholVolume: "ca. 11 % vol",
-    image: "https://recipesfromapantry.com/wp-content/uploads/2018/04/strawberry-daiquiri-4.jpg",
-    ingredients: [
-      "5 cl Rum",
-      "4 cl Fruchtpüree Mango oder Erdbeere",
-      "2 cl Fruchtsirup",
-      "2 cl Limettensaft",
-      "1 cl Zitronensaft",
-      "1 großer Scoop Crushed Ice"
-    ],
-    steps: [
-      "Alle Zutaten zusammen mit reichlich Eis in den Mixer geben.",
-      "Fein und cremig mixen.",
-      "In ein gekühltes Glas füllen.",
-      "Direkt servieren."
-    ]
-  },
+      "frozen-daiquiri": {
+        title: "Frozen Daiquiri Mango / Erdbeere",
+        category: "Vacay Vibes",
+        alcoholVolume: "ca. 11 % vol",
+        image: "https://recipesfromapantry.com/wp-content/uploads/2018/04/strawberry-daiquiri-4.jpg",
+        ingredients: [
+          "5 cl Rum",
+          "4 cl Fruchtpüree Mango oder Erdbeere",
+          "2 cl Fruchtsirup",
+          "2 cl Limettensaft",
+          "1 cl Zitronensaft",
+          "1 großer Scoop Crushed Ice"
+        ],
+        steps: [
+          "Alle Zutaten zusammen mit reichlich Eis in den Mixer geben.",
+          "Fein und cremig mixen.",
+          "In ein gekühltes Glas füllen.",
+          "Direkt servieren."
+        ]
+      },
 
-  "bahama-mama": {
-    title: "Bahama Mama",
-    category: "Vacay Vibes",
-    alcoholVolume: "ca. 14 % vol",
-    image: "https://drimaco.com/_next/image?url=%2Fimages%2Fcocktails%2Fbahama-mama.webp&w=1024&q=75",
-    ingredients: [
-      "4 cl Rum",
-      "2 cl Kokoslikör oder Kokossirup",
-      "1 cl Grenadine",
-      "2 cl Zitronensaft",
-      "6 cl Ananassaft",
-      "6 cl Orangensaft"
-    ],
-    steps: [
-      "Alle Zutaten mit Eis in den Shaker geben.",
-      "Kräftig shaken.",
-      "In ein Glas mit Eis abseihen.",
-      "Servieren."
-    ]
-  },
+      "bahama-mama": {
+        title: "Bahama Mama",
+        category: "Vacay Vibes",
+        alcoholVolume: "ca. 14 % vol",
+        image: "https://drimaco.com/_next/image?url=%2Fimages%2Fcocktails%2Fbahama-mama.webp&w=1024&q=75",
+        ingredients: [
+          "4 cl Rum",
+          "2 cl Kokoslikör oder Kokossirup",
+          "1 cl Grenadine",
+          "2 cl Zitronensaft",
+          "6 cl Ananassaft",
+          "6 cl Orangensaft"
+        ],
+        steps: [
+          "Alle Zutaten mit Eis in den Shaker geben.",
+          "Kräftig shaken.",
+          "In ein Glas mit Eis abseihen.",
+          "Servieren."
+        ]
+      },
 
-  "solero": {
-    title: "Solero",
-    category: "Vacay Vibes",
-    alcoholVolume: "ca. 9 % vol",
-    image: "https://img.chefkoch-cdn.de/rezepte/629891163497995/bilder/1616502/crop-960x640/solero-cocktail.jpg",
-    ingredients: [
-      "4,5 cl Vodka",
-      "2 cl Vanillesirup",
-      "1 cl Zitronensaft",
-      "10 cl Maracujasaft"
-    ],
-    steps: [
-      "Vodka, Vanillesirup und Zitronensaft mit Eis shaken.",
-      "In ein Glas abseihen.",
-      "Mit Maracujasaft auffüllen.",
-      "Kurz umrühren und servieren."
-    ]
-  },
+      "solero": {
+        title: "Solero",
+        category: "Vacay Vibes",
+        alcoholVolume: "ca. 9 % vol",
+        image: "https://img.chefkoch-cdn.de/rezepte/629891163497995/bilder/1616502/crop-960x640/solero-cocktail.jpg",
+        ingredients: [
+          "4,5 cl Vodka",
+          "2 cl Vanillesirup",
+          "1 cl Zitronensaft",
+          "10 cl Maracujasaft"
+        ],
+        steps: [
+          "Vodka, Vanillesirup und Zitronensaft mit Eis shaken.",
+          "In ein Glas abseihen.",
+          "Mit Maracujasaft auffüllen.",
+          "Kurz umrühren und servieren."
+        ]
+      },
 
-  "negroni": {
-    title: "Negroni",
-    category: "Spirit Forward",
-    alcoholVolume: "ca. 24 % vol",
-    image: "https://images.pexels.com/photos/1304540/pexels-photo-1304540.jpeg",
-    ingredients: [
-      "3 cl Gin",
-      "3 cl Campari",
-      "3 cl roter Wermut"
-    ],
-    steps: [
-      "Alle Zutaten in ein Rührglas mit Eis geben.",
-      "Gut kalt rühren.",
-      "In ein Tumblerglas auf Eis abseihen.",
-      "Servieren."
-    ]
-  },
+      "negroni": {
+        title: "Negroni",
+        category: "Spirit Forward",
+        alcoholVolume: "ca. 24 % vol",
+        image: "https://images.pexels.com/photos/1304540/pexels-photo-1304540.jpeg",
+        ingredients: [
+          "3 cl Gin",
+          "3 cl Campari",
+          "3 cl roter Wermut"
+        ],
+        steps: [
+          "Alle Zutaten in ein Rührglas mit Eis geben.",
+          "Gut kalt rühren.",
+          "In ein Tumblerglas auf Eis abseihen.",
+          "Servieren."
+        ]
+      },
 
-  "martini": {
-    title: "Martini",
-    category: "Spirit Forward",
-    alcoholVolume: "ca. 28 % vol",
-    image: "https://tlapazola.com/wp-content/uploads/2020/02/Category-Product-Item_glassware.jpg",
-    ingredients: [
-      "6 cl Gin",
-      "1 cl trockener Wermut"
-    ],
-    steps: [
-      "Gin und Wermut in ein Rührglas mit Eis geben.",
-      "Sehr kalt rühren.",
-      "In eine gekühlte Cocktailschale abseihen.",
-      "Nach Wunsch garnieren.",
-      "Servieren."
-    ]
-  },
+      "martini": {
+        title: "Martini",
+        category: "Spirit Forward",
+        alcoholVolume: "ca. 28 % vol",
+        image: "https://tlapazola.com/wp-content/uploads/2020/02/Category-Product-Item_glassware.jpg",
+        ingredients: [
+          "6 cl Gin",
+          "1 cl trockener Wermut"
+        ],
+        steps: [
+          "Gin und Wermut in ein Rührglas mit Eis geben.",
+          "Sehr kalt rühren.",
+          "In eine gekühlte Cocktailschale abseihen.",
+          "Nach Wunsch garnieren.",
+          "Servieren."
+        ]
+      },
 
-  "boulevardier": {
-    title: "Boulevardier",
-    category: "Spirit Forward",
-    alcoholVolume: "ca. 25 % vol",
-    image: "https://images.pexels.com/photos/1304540/pexels-photo-1304540.jpeg",
-    ingredients: [
-      "3 cl Bourbon Whiskey",
-      "3 cl roter Wermut",
-      "3 cl Campari"
-    ],
-    steps: [
-      "Alle Zutaten mit Eis kalt rühren.",
-      "In ein Tumblerglas auf Eis abseihen.",
-      "Nach Wunsch garnieren.",
-      "Servieren."
-    ]
-  },
+      "boulevardier": {
+        title: "Boulevardier",
+        category: "Spirit Forward",
+        alcoholVolume: "ca. 25 % vol",
+        image: "https://images.pexels.com/photos/1304540/pexels-photo-1304540.jpeg",
+        ingredients: [
+          "3 cl Bourbon Whiskey",
+          "3 cl roter Wermut",
+          "3 cl Campari"
+        ],
+        steps: [
+          "Alle Zutaten mit Eis kalt rühren.",
+          "In ein Tumblerglas auf Eis abseihen.",
+          "Nach Wunsch garnieren.",
+          "Servieren."
+        ]
+      },
 
-  "long-island": {
-    title: "Long Island Ice Tea",
-    category: "Party Favorites",
-    alcoholVolume: "ca. 18 % vol",
-    image: "https://images.rawpixel.com/image_social_portrait/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvZnJzd2VldF90ZWFfd2l0aF9sZW1vbi1pbWFnZS1reWNmYmM1dC5qcGc.jpg",
-    ingredients: [
-      "1,5 cl Vodka",
-      "1,5 cl Rum",
-      "1,5 cl Tequila",
-      "1,5 cl Gin",
-      "1,5 cl Triple Sec",
-      "2 cl Zitronensaft",
-      "1 cl Lime Juice",
-      "4 cl Orangensaft",
-      "Cola zum Auffüllen"
-    ],
-    steps: [
-      "Alle Zutaten außer Cola mit Eis in den Shaker geben.",
-      "Kurz shaken.",
-      "In ein großes Glas auf Eis geben.",
-      "Mit Cola toppen.",
-      "Kurz umrühren und servieren."
-    ]
-  },
+      "long-island": {
+        title: "Long Island Ice Tea",
+        category: "Party Favorites",
+        alcoholVolume: "ca. 18 % vol",
+        image: "https://images.rawpixel.com/image_social_portrait/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvZnJzd2VldF90ZWFfd2l0aF9sZW1vbi1pbWFnZS1reWNmYmM1dC5qcGc.jpg",
+        ingredients: [
+          "1,5 cl Vodka",
+          "1,5 cl Rum",
+          "1,5 cl Tequila",
+          "1,5 cl Gin",
+          "1,5 cl Triple Sec",
+          "2 cl Zitronensaft",
+          "1 cl Lime Juice",
+          "4 cl Orangensaft",
+          "Cola zum Auffüllen"
+        ],
+        steps: [
+          "Alle Zutaten außer Cola mit Eis in den Shaker geben.",
+          "Kurz shaken.",
+          "In ein großes Glas auf Eis geben.",
+          "Mit Cola toppen.",
+          "Kurz umrühren und servieren."
+        ]
+      },
 
-  "moscow-mule": {
-    title: "Moscow Mule",
-    category: "Party Favorites",
-    alcoholVolume: "ca. 10 % vol",
-    image: "https://www.gutekueche.at/storage/media/recipe/101251/resp/moscow-mule-ohne-kupferbecher___webp_940_705.webp",
-    ingredients: [
-      "5 cl Vodka",
-      "1,5 cl Limettensaft",
-      "10 cl Ginger Beer",
-      "2 Gurkenscheiben"
-    ],
-    steps: [
-      "Vodka und Limette in ein Glas auf Eis geben.",
-      "Mit Ginger Beer auffüllen.",
-      "Kurz umrühren.",
-      "Mit Gurke servieren."
-    ]
-  },
+      "moscow-mule": {
+        title: "Moscow Mule",
+        category: "Party Favorites",
+        alcoholVolume: "ca. 10 % vol",
+        image: "https://www.gutekueche.at/storage/media/recipe/101251/resp/moscow-mule-ohne-kupferbecher___webp_940_705.webp",
+        ingredients: [
+          "5 cl Vodka",
+          "1,5 cl Limettensaft",
+          "10 cl Ginger Beer",
+          "2 Gurkenscheiben"
+        ],
+        steps: [
+          "Vodka und Limette in ein Glas auf Eis geben.",
+          "Mit Ginger Beer auffüllen.",
+          "Kurz umrühren.",
+          "Mit Gurke servieren."
+        ]
+      },
 
-  "mojito": {
-    title: "Mojito",
-    category: "Party Favorites",
-    alcoholVolume: "ca. 11 % vol",
-    image: "https://images.pexels.com/photos/11009215/pexels-photo-11009215.jpeg",
-    ingredients: [
-      "5 cl weißer Rum",
-      "1 Limette in Stücken",
-      "2 Barlöffel Rohrzucker",
-      "8–10 Minzblätter",
-      "Soda Water zum Auffüllen"
-    ],
-    steps: [
-      "Limette, Zucker und Minze ins Glas geben.",
-      "Leicht andrücken.",
-      "Eis und Rum zugeben.",
-      "Mit Sprudelwasser auffüllen.",
-      "Kurz umrühren und servieren."
-    ]
-  },
+      "mojito": {
+        title: "Mojito",
+        category: "Party Favorites",
+        alcoholVolume: "ca. 11 % vol",
+        image: "https://images.pexels.com/photos/11009215/pexels-photo-11009215.jpeg",
+        ingredients: [
+          "5 cl weißer Rum",
+          "1 Limette in Stücken",
+          "2 Barlöffel Rohrzucker",
+          "8–10 Minzblätter",
+          "Soda Water zum Auffüllen"
+        ],
+        steps: [
+          "Limette, Zucker und Minze ins Glas geben.",
+          "Leicht andrücken.",
+          "Eis und Rum zugeben.",
+          "Mit Sprudelwasser auffüllen.",
+          "Kurz umrühren und servieren."
+        ]
+      },
 
-  "caipirinha": {
-    title: "Caipirinha",
-    category: "Party Favorites",
-    alcoholVolume: "ca. 14 % vol",
-    image: "https://img.ccnull.de/1090000/preview/1091284_e24c3e6442b9600934eccdc34dbde435.jpg",
-    ingredients: [
-      "5 cl Cachaça",
-      "1 Limette in Stücken",
-      "2 Barlöffel Rohrzucker"
-    ],
-    steps: [
-      "Limette und Rohrzucker ins Glas geben.",
-      "Kräftig andrücken.",
-      "Eis hinzufügen.",
-      "Cachaça dazugeben.",
-      "Gut umrühren und servieren."
-    ]
-  },
+      "caipirinha": {
+        title: "Caipirinha",
+        category: "Party Favorites",
+        alcoholVolume: "ca. 14 % vol",
+        image: "https://img.ccnull.de/1090000/preview/1091284_e24c3e6442b9600934eccdc34dbde435.jpg",
+        ingredients: [
+          "5 cl Cachaça",
+          "1 Limette in Stücken",
+          "2 Barlöffel Rohrzucker"
+        ],
+        steps: [
+          "Limette und Rohrzucker ins Glas geben.",
+          "Kräftig andrücken.",
+          "Eis hinzufügen.",
+          "Cachaça dazugeben.",
+          "Gut umrühren und servieren."
+        ]
+      },
 
-  "cuba-libre": {
-    title: "Cuba Libre",
-    category: "Party Favorites",
-    alcoholVolume: "ca. 10 % vol",
-    image: "https://img.ccnull.de/1090000/preview/1091292_dffb99a361ec13449c4213b49199d010.jpg",
-    ingredients: [
-      "5 cl Rum",
-      "1 cl Limettensaft",
-      "Cola zum Auffüllen"
-    ],
-    steps: [
-      "Ein Glas mit Eis füllen.",
-      "Rum und Limettensaft hineingeben.",
-      "Mit Cola auffüllen.",
-      "Kurz umrühren und servieren."
-    ]
-  },
+      "cuba-libre": {
+        title: "Cuba Libre",
+        category: "Party Favorites",
+        alcoholVolume: "ca. 10 % vol",
+        image: "https://img.ccnull.de/1090000/preview/1091292_dffb99a361ec13449c4213b49199d010.jpg",
+        ingredients: [
+          "5 cl Rum",
+          "1 cl Limettensaft",
+          "Cola zum Auffüllen"
+        ],
+        steps: [
+          "Ein Glas mit Eis füllen.",
+          "Rum und Limettensaft hineingeben.",
+          "Mit Cola auffüllen.",
+          "Kurz umrühren und servieren."
+        ]
+      },
 
-  "tequila-sunrise": {
-    title: "Tequila Sunrise",
-    category: "Party Favorites",
-    alcoholVolume: "ca. 9 % vol",
-    image: "https://upload.wikimedia.org/wikipedia/commons/e/e9/Tequila_sunrise.jpg",
-    ingredients: [
-      "5 cl Tequila",
-      "10 cl Orangensaft",
-      "1 cl Zitronensaft",
-      "1 cl Grenadine"
-    ],
-    steps: [
-      "Tequila, Orangensaft und Zitrone mit Eis ins Glas geben.",
-      "Kurz umrühren.",
-      "Grenadine langsam eingießen.",
-      "Servieren."
-    ]
-  },
+      "tequila-sunrise": {
+        title: "Tequila Sunrise",
+        category: "Party Favorites",
+        alcoholVolume: "ca. 9 % vol",
+        image: "https://upload.wikimedia.org/wikipedia/commons/e/e9/Tequila_sunrise.jpg",
+        ingredients: [
+          "5 cl Tequila",
+          "10 cl Orangensaft",
+          "1 cl Zitronensaft",
+          "1 cl Grenadine"
+        ],
+        steps: [
+          "Tequila, Orangensaft und Zitrone mit Eis ins Glas geben.",
+          "Kurz umrühren.",
+          "Grenadine langsam eingießen.",
+          "Servieren."
+        ]
+      },
 
-  "sex-on-the-beach": {
-    title: "Sex on the Beach",
-    category: "Party Favorites",
-    alcoholVolume: "ca. 9 % vol",
-    image: "https://images.pexels.com/photos/4134386/pexels-photo-4134386.jpeg",
-    ingredients: [
-      "4 cl Vodka",
-      "2 cl Pfirsichlikör",
-      "1 cl Zitronensaft",
-      "1 cl Grenadine",
-      "4 cl Cranberrysaft",
-      "4 cl Orangensaft"
-    ],
-    steps: [
-      "Alle Zutaten mit Eis shaken.",
-      "In ein Glas auf frisches Eis abseihen.",
-      "Servieren."
-    ]
-  },
+      "sex-on-the-beach": {
+        title: "Sex on the Beach",
+        category: "Party Favorites",
+        alcoholVolume: "ca. 9 % vol",
+        image: "https://images.pexels.com/photos/4134386/pexels-photo-4134386.jpeg",
+        ingredients: [
+          "4 cl Vodka",
+          "2 cl Pfirsichlikör",
+          "1 cl Zitronensaft",
+          "1 cl Grenadine",
+          "4 cl Cranberrysaft",
+          "4 cl Orangensaft"
+        ],
+        steps: [
+          "Alle Zutaten mit Eis shaken.",
+          "In ein Glas auf frisches Eis abseihen.",
+          "Servieren."
+        ]
+      },
 
-  "touchdown": {
-    title: "Touchdown",
-    category: "Party Favorites",
-    alcoholVolume: "ca. 10 % vol",
-    image: "https://images.unsplash.com/photo-1546173159-315724a31696?auto=format&fit=crop&w=300&q=80",
-    ingredients: [
-      "4 cl Vodka",
-      "2 cl Pfirsichlikör",
-      "1 cl Zitronensaft",
-      "1 cl Grenadine",
-      "8 cl Maracujasaft"
-    ],
-    steps: [
-      "Alle Zutaten in den Shaker mit Eis geben.",
-      "Kräftig shaken.",
-      "In ein Glas auf Eis abseihen.",
-      "Servieren."
-    ]
-  },
+      "touchdown": {
+        title: "Touchdown",
+        category: "Party Favorites",
+        alcoholVolume: "ca. 10 % vol",
+        image: "https://images.unsplash.com/photo-1546173159-315724a31696?auto=format&fit=crop&w=300&q=80",
+        ingredients: [
+          "4 cl Vodka",
+          "2 cl Pfirsichlikör",
+          "1 cl Zitronensaft",
+          "1 cl Grenadine",
+          "8 cl Maracujasaft"
+        ],
+        steps: [
+          "Alle Zutaten in den Shaker mit Eis geben.",
+          "Kräftig shaken.",
+          "In ein Glas auf Eis abseihen.",
+          "Servieren."
+        ]
+      },
 
-  "paloma": {
-    title: "Paloma",
-    category: "Party Favorites",
-    alcoholVolume: "ca. 10 % vol",
-    image: "https://cdn.apartmenttherapy.info/image/upload/f_auto,q_auto:eco,c_fit,w_730,h_548/k%2FPhoto%2FRecipes%2F2024-05-paloma%2Fpaloma-145",
-    ingredients: [
-      "5 cl Tequila",
-      "2 cl Limettensaft",
-      "10 cl Grapefruit-Limonade"
-    ],
-    steps: [
-      "Tequila und Limettensaft mit Eis ins Glas geben.",
-      "Mit Grapefruit-Limonade auffüllen.",
-      "Kurz umrühren.",
-      "Servieren."
-    ]
-  },
+      "paloma": {
+        title: "Paloma",
+        category: "Party Favorites",
+        alcoholVolume: "ca. 10 % vol",
+        image: "https://cdn.apartmenttherapy.info/image/upload/f_auto,q_auto:eco,c_fit,w_730,h_548/k%2FPhoto%2FRecipes%2F2024-05-paloma%2Fpaloma-145",
+        ingredients: [
+          "5 cl Tequila",
+          "2 cl Limettensaft",
+          "10 cl Grapefruit-Limonade"
+        ],
+        steps: [
+          "Tequila und Limettensaft mit Eis ins Glas geben.",
+          "Mit Grapefruit-Limonade auffüllen.",
+          "Kurz umrühren.",
+          "Servieren."
+        ]
+      },
 
-  "pornstar-martini": {
-    title: "Pornstar Martini",
-    category: "Main Character Energy",
-    alcoholVolume: "ca. 15 % vol",
-    image: "https://images.pexels.com/photos/31331973/pexels-photo-31331973/free-photo-of-elegant-passion-fruit-martini-physalis.jpeg",
-    ingredients: [
-      "4 cl Vodka",
-      "2 cl Passionsfruchtlikör",
-      "1 cl Zitronensaft",
-      "1 cl Vanillesirup",
-      "4 cl Maracujasaft",
-      "4 cl Sekt separat"
-    ],
-    steps: [
-      "Vodka, Passionsfruchtlikör, Zitrone und Vanillesirup mit Eis shaken.",
-      "In eine Cocktailschale abseihen.",
-      "Den Sekt separat dazu servieren.",
-      "Servieren."
-    ]
-  },
+      "pornstar-martini": {
+        title: "Pornstar Martini",
+        category: "Main Character Energy",
+        alcoholVolume: "ca. 15 % vol",
+        image: "https://images.pexels.com/photos/31331973/pexels-photo-31331973/free-photo-of-elegant-passion-fruit-martini-physalis.jpeg",
+        ingredients: [
+          "4 cl Vodka",
+          "2 cl Passionsfruchtlikör",
+          "1 cl Zitronensaft",
+          "1 cl Vanillesirup",
+          "4 cl Maracujasaft",
+          "4 cl Sekt separat"
+        ],
+        steps: [
+          "Vodka, Passionsfruchtlikör, Zitrone und Vanillesirup mit Eis shaken.",
+          "In eine Cocktailschale abseihen.",
+          "Den Sekt separat dazu servieren.",
+          "Servieren."
+        ]
+      },
 
-  "espresso-martini": {
-    title: "Espresso Martini",
-    category: "Main Character Energy",
-    alcoholVolume: "ca. 16 % vol",
-    image: "https://images.pexels.com/photos/34429981/pexels-photo-34429981/free-photo-of-classic-espresso-martini-on-marble-table.jpeg",
-    ingredients: [
-      "4 cl Vodka",
-      "2 cl Kaffeelikör",
-      "3 cl frischer Espresso",
-      "1 cl Zuckersirup"
-    ],
-    steps: [
-      "Alle Zutaten mit Eis in den Shaker geben.",
-      "Sehr kräftig shaken.",
-      "In eine gekühlte Schale abseihen.",
-      "Servieren."
-    ]
-  },
+      "espresso-martini": {
+        title: "Espresso Martini",
+        category: "Main Character Energy",
+        alcoholVolume: "ca. 16 % vol",
+        image: "https://images.pexels.com/photos/34429981/pexels-photo-34429981/free-photo-of-classic-espresso-martini-on-marble-table.jpeg",
+        ingredients: [
+          "4 cl Vodka",
+          "2 cl Kaffeelikör",
+          "3 cl frischer Espresso",
+          "1 cl Zuckersirup"
+        ],
+        steps: [
+          "Alle Zutaten mit Eis in den Shaker geben.",
+          "Sehr kräftig shaken.",
+          "In eine gekühlte Schale abseihen.",
+          "Servieren."
+        ]
+      },
 
-  "margarita": {
-    title: "Margarita",
-    category: "Main Character Energy",
-    alcoholVolume: "ca. 18 % vol",
-    image: "https://i2.pickpik.com/photos/872/655/628/margarita-drink-cocktail-tropical-preview.jpg",
-    ingredients: [
-      "5 cl Tequila",
-      "2 cl Triple Sec",
-      "2,5 cl Limettensaft",
-      "0,5 cl Zuckersirup optional"
-    ],
-    steps: [
-      "Alle Zutaten mit Eis shaken.",
-      "In ein passendes Glas abseihen.",
-      "Nach Wunsch mit Salzrand servieren."
-    ]
-  },
+      "margarita": {
+        title: "Margarita",
+        category: "Main Character Energy",
+        alcoholVolume: "ca. 18 % vol",
+        image: "https://i2.pickpik.com/photos/872/655/628/margarita-drink-cocktail-tropical-preview.jpg",
+        ingredients: [
+          "5 cl Tequila",
+          "2 cl Triple Sec",
+          "2,5 cl Limettensaft",
+          "0,5 cl Zuckersirup optional"
+        ],
+        steps: [
+          "Alle Zutaten mit Eis shaken.",
+          "In ein passendes Glas abseihen.",
+          "Nach Wunsch mit Salzrand servieren."
+        ]
+      },
 
-  "ipanema": {
-    title: "Ipanema",
-    category: "Zero Proof",
-    alcoholVolume: "0,0 % vol",
-    image: "https://www.lifehackerin.com/wp-content/uploads/2022/01/Lifehackeirn_Ipanema-1536x1152.jpg",
-    ingredients: [
-      "2 Barlöffel Rohrzucker",
-      "1 Limette in Stücken",
-      "8 cl Maracujasaft",
-      "Ginger Ale zum Auffüllen"
-    ],
-    steps: [
-      "Limette und Rohrzucker ins Glas geben.",
-      "Leicht andrücken.",
-      "Eis hinzufügen.",
-      "Maracujasaft und Ginger Ale eingießen.",
-      "Kurz umrühren und servieren."
-    ]
-  },
+      "ipanema": {
+        title: "Ipanema",
+        category: "Zero Proof",
+        alcoholVolume: "0,0 % vol",
+        image: "https://www.lifehackerin.com/wp-content/uploads/2022/01/Lifehackeirn_Ipanema-1536x1152.jpg",
+        ingredients: [
+          "2 Barlöffel Rohrzucker",
+          "1 Limette in Stücken",
+          "8 cl Maracujasaft",
+          "Ginger Ale zum Auffüllen"
+        ],
+        steps: [
+          "Limette und Rohrzucker ins Glas geben.",
+          "Leicht andrücken.",
+          "Eis hinzufügen.",
+          "Maracujasaft und Ginger Ale eingießen.",
+          "Kurz umrühren und servieren."
+        ]
+      },
 
-  "maracuja-mule": {
-    title: "Maracuja Mule",
-    category: "Zero Proof",
-    alcoholVolume: "0,0 % vol",
-    image: "https://colorsoffood.de/wp-content/uploads/2018/07/Passionsfrucht-Gin-Gin-Mule-4.jpg",
-    ingredients: [
-      "2 cl Limettensaft",
-      "8 cl Maracujasaft",
-      "Ginger Ale zum Auffüllen"
-    ],
-    steps: [
-      "Ein Glas mit Eis füllen.",
-      "Limette und Maracujasaft zugeben.",
-      "Mit Ginger Ale auffüllen.",
-      "Kurz umrühren und servieren."
-    ]
-  },
+      "maracuja-mule": {
+        title: "Maracuja Mule",
+        category: "Zero Proof",
+        alcoholVolume: "0,0 % vol",
+        image: "https://colorsoffood.de/wp-content/uploads/2018/07/Passionsfrucht-Gin-Gin-Mule-4.jpg",
+        ingredients: [
+          "2 cl Limettensaft",
+          "8 cl Maracujasaft",
+          "Ginger Ale zum Auffüllen"
+        ],
+        steps: [
+          "Ein Glas mit Eis füllen.",
+          "Limette und Maracujasaft zugeben.",
+          "Mit Ginger Ale auffüllen.",
+          "Kurz umrühren und servieren."
+        ]
+      },
 
-  "virgin-colada": {
-    title: "Virgin Colada",
-    category: "Zero Proof",
-    alcoholVolume: "0,0 % vol",
-    image: "https://images.pexels.com/photos/10986589/pexels-photo-10986589.jpeg",
-    ingredients: [
-      "2 cl Sahne",
-      "3 cl Kokossirup",
-      "10 cl Ananassaft"
-    ],
-    steps: [
-      "Alle Zutaten mit Eis mixen oder shaken.",
-      "In ein Glas füllen.",
-      "Servieren."
-    ]
-  }
-};
+      "virgin-colada": {
+        title: "Virgin Colada",
+        category: "Zero Proof",
+        alcoholVolume: "0,0 % vol",
+        image: "https://images.pexels.com/photos/10986589/pexels-photo-10986589.jpeg",
+        ingredients: [
+          "2 cl Sahne",
+          "3 cl Kokossirup",
+          "10 cl Ananassaft"
+        ],
+        steps: [
+          "Alle Zutaten mit Eis mixen oder shaken.",
+          "In ein Glas füllen.",
+          "Servieren."
+        ]
+      }
+    };
+
     const categoryButtons = document.querySelectorAll(".category-btn");
     const cocktailTiles = document.querySelectorAll(".cocktail-tile");
     const searchInput = document.getElementById("searchInput");
@@ -1104,6 +1238,11 @@ const recipes = {
     const recipeImage = document.getElementById("recipeImage");
     const ingredientsList = document.getElementById("ingredientsList");
     const stepsList = document.getElementById("stepsList");
+
+    const overlay = document.getElementById("ingredientsOverlay");
+    const openIngredientsBtn = document.getElementById("openIngredientsBtn");
+    const closeIngredientsBtn = document.getElementById("closeIngredientsBtn");
+    const overlayTableBody = document.getElementById("overlayTableBody");
 
     let activeCategory = "all";
 
@@ -1143,50 +1282,50 @@ const recipes = {
     }
 
     function renderSuggestions() {
-  const term = searchInput.value.trim().toLowerCase();
+      const term = searchInput.value.trim().toLowerCase();
 
-  if (!term) {
-    searchSuggestions.innerHTML = "";
-    searchSuggestions.classList.remove("active");
-    return;
-  }
+      if (!term) {
+        searchSuggestions.innerHTML = "";
+        searchSuggestions.classList.remove("active");
+        return;
+      }
 
-  const matches = Object.entries(recipes)
-    .filter(([id, recipe]) => recipeMatchesSearch(recipe, term))
-    .sort((a, b) => a[1].title.localeCompare(b[1].title, "de"))
-    .slice(0, 8);
+      const matches = Object.entries(recipes)
+        .filter(([id, recipe]) => recipeMatchesSearch(recipe, term))
+        .sort((a, b) => a[1].title.localeCompare(b[1].title, "de"))
+        .slice(0, 8);
 
-  if (matches.length === 0) {
-    searchSuggestions.innerHTML = "";
-    searchSuggestions.classList.remove("active");
-    return;
-  }
+      if (matches.length === 0) {
+        searchSuggestions.innerHTML = "";
+        searchSuggestions.classList.remove("active");
+        return;
+      }
 
-  searchSuggestions.innerHTML = matches.map(([id, recipe]) => `
-    <button class="search-suggestion" type="button" data-id="${id}">
-      <span class="search-suggestion-title">${recipe.title}</span>
-      <span class="search-suggestion-meta">${recipe.category} · ${recipe.alcoholVolume || "-"}</span>
-    </button>
-  `).join("");
+      searchSuggestions.innerHTML = matches.map(([id, recipe]) => `
+        <button class="search-suggestion" type="button" data-id="${id}">
+          <span class="search-suggestion-title">${recipe.title}</span>
+          <span class="search-suggestion-meta">${recipe.category} · ${recipe.alcoholVolume || "-"}</span>
+        </button>
+      `).join("");
 
-  searchSuggestions.classList.add("active");
+      searchSuggestions.classList.add("active");
 
-  searchSuggestions.querySelectorAll(".search-suggestion").forEach(button => {
-    button.addEventListener("click", () => {
-      const id = button.dataset.id;
-      searchInput.value = recipes[id].title;
-      showRecipe(id);
-      filterCocktails();
-      searchSuggestions.innerHTML = "";
-      searchSuggestions.classList.remove("active");
+      searchSuggestions.querySelectorAll(".search-suggestion").forEach(button => {
+        button.addEventListener("click", () => {
+          const id = button.dataset.id;
+          searchInput.value = recipes[id].title;
+          showRecipe(id);
+          filterCocktails();
+          searchSuggestions.innerHTML = "";
+          searchSuggestions.classList.remove("active");
 
-      document.getElementById("recipePanel").scrollIntoView({
-        behavior: "smooth",
-        block: "start"
+          document.getElementById("recipePanel").scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+          });
+        });
       });
-    });
-  });
-}
+    }
 
     function filterCocktails() {
       const term = searchInput.value.trim().toLowerCase();
@@ -1197,10 +1336,15 @@ const recipes = {
         const id = tile.dataset.id;
         const recipe = recipes[id];
 
-        const categoryMatch = activeCategory === "all" || category === activeCategory;
-        const searchMatch = !term || (recipe && recipeMatchesSearch(recipe, term));
+        let shouldShow = false;
 
-        if (categoryMatch && searchMatch) {
+        if (term) {
+          shouldShow = recipe && recipeMatchesSearch(recipe, term);
+        } else {
+          shouldShow = activeCategory === "all" || category === activeCategory;
+        }
+
+        if (shouldShow) {
           tile.classList.add("visible");
           visibleCount++;
         } else {
@@ -1211,6 +1355,20 @@ const recipes = {
 
       emptyState.style.display = visibleCount === 0 ? "block" : "none";
       renderSuggestions();
+    }
+
+    function renderOverlayTable() {
+      const sortedRecipes = Object.values(recipes).sort((a, b) =>
+        a.title.localeCompare(b.title, "de")
+      );
+
+      overlayTableBody.innerHTML = sortedRecipes.map(recipe => `
+        <tr>
+          <td>${recipe.title}</td>
+          <td>${recipe.alcoholVolume || "-"}</td>
+          <td>${recipe.ingredients.join("\n")}</td>
+        </tr>
+      `).join("");
     }
 
     categoryButtons.forEach(button => {
@@ -1243,6 +1401,23 @@ const recipes = {
         searchSuggestions.classList.remove("active");
       }
     });
+
+    if (openIngredientsBtn && closeIngredientsBtn && overlay && overlayTableBody) {
+      openIngredientsBtn.addEventListener("click", () => {
+        renderOverlayTable();
+        overlay.classList.add("active");
+      });
+
+      closeIngredientsBtn.addEventListener("click", () => {
+        overlay.classList.remove("active");
+      });
+
+      overlay.addEventListener("click", (event) => {
+        if (event.target === overlay) {
+          overlay.classList.remove("active");
+        }
+      });
+    }
 
     showRecipe("whiskey-sour");
     filterCocktails();
