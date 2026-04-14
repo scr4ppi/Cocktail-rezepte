@@ -1143,55 +1143,50 @@ const recipes = {
     }
 
     function renderSuggestions() {
-      const term = searchInput.value.trim().toLowerCase();
+  const term = searchInput.value.trim().toLowerCase();
 
-      if (!term) {
-        searchSuggestions.innerHTML = "";
-        searchSuggestions.classList.remove("active");
-        return;
-      }
+  if (!term) {
+    searchSuggestions.innerHTML = "";
+    searchSuggestions.classList.remove("active");
+    return;
+  }
 
-      const matches = Object.entries(recipes)
-        .filter(([id, recipe]) => {
-          const tile = document.querySelector(`.cocktail-tile[data-id="${id}"]`);
-          if (!tile) return false;
+  const matches = Object.entries(recipes)
+    .filter(([id, recipe]) => recipeMatchesSearch(recipe, term))
+    .sort((a, b) => a[1].title.localeCompare(b[1].title, "de"))
+    .slice(0, 8);
 
-          const categoryMatch = activeCategory === "all" || tile.dataset.category === activeCategory;
-          return categoryMatch && recipeMatchesSearch(recipe, term);
-        })
-        .slice(0, 6);
+  if (matches.length === 0) {
+    searchSuggestions.innerHTML = "";
+    searchSuggestions.classList.remove("active");
+    return;
+  }
 
-      if (matches.length === 0) {
-        searchSuggestions.innerHTML = "";
-        searchSuggestions.classList.remove("active");
-        return;
-      }
+  searchSuggestions.innerHTML = matches.map(([id, recipe]) => `
+    <button class="search-suggestion" type="button" data-id="${id}">
+      <span class="search-suggestion-title">${recipe.title}</span>
+      <span class="search-suggestion-meta">${recipe.category} · ${recipe.alcoholVolume || "-"}</span>
+    </button>
+  `).join("");
 
-      searchSuggestions.innerHTML = matches.map(([id, recipe]) => `
-        <button class="search-suggestion" type="button" data-id="${id}">
-          <span class="search-suggestion-title">${recipe.title}</span>
-          <span class="search-suggestion-meta">${recipe.category} · ${recipe.alcoholVolume || "-"}</span>
-        </button>
-      `).join("");
+  searchSuggestions.classList.add("active");
 
-      searchSuggestions.classList.add("active");
+  searchSuggestions.querySelectorAll(".search-suggestion").forEach(button => {
+    button.addEventListener("click", () => {
+      const id = button.dataset.id;
+      searchInput.value = recipes[id].title;
+      showRecipe(id);
+      filterCocktails();
+      searchSuggestions.innerHTML = "";
+      searchSuggestions.classList.remove("active");
 
-      searchSuggestions.querySelectorAll(".search-suggestion").forEach(button => {
-        button.addEventListener("click", () => {
-          const id = button.dataset.id;
-          searchInput.value = recipes[id].title;
-          showRecipe(id);
-          filterCocktails();
-          searchSuggestions.innerHTML = "";
-          searchSuggestions.classList.remove("active");
-
-          document.getElementById("recipePanel").scrollIntoView({
-            behavior: "smooth",
-            block: "start"
-          });
-        });
+      document.getElementById("recipePanel").scrollIntoView({
+        behavior: "smooth",
+        block: "start"
       });
-    }
+    });
+  });
+}
 
     function filterCocktails() {
       const term = searchInput.value.trim().toLowerCase();
