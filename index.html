@@ -67,13 +67,18 @@
       padding: 18px 12px 40px;
     }
 
-    .hero {
-      background: rgba(0, 0, 0, 0.48);
+    .hero,
+    .recipe-panel,
+    .batch-panel {
+      background: rgba(0, 0, 0, 0.55);
       border: 1px solid var(--border);
       border-radius: var(--radius-xl);
-      padding: 20px 16px 18px;
+      padding: 18px;
       box-shadow: var(--shadow);
-      backdrop-filter: blur(10px);
+      backdrop-filter: blur(8px);
+    }
+
+    .hero {
       margin-bottom: 16px;
     }
 
@@ -92,6 +97,10 @@
     .header-actions {
       margin-top: 14px;
       text-align: center;
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
     }
 
     .ingredients-btn {
@@ -119,7 +128,9 @@
       position: relative;
     }
 
-    .search-input {
+    .search-input,
+    .batch-select,
+    .batch-custom-input {
       width: 100%;
       padding: 14px 16px;
       border-radius: 999px;
@@ -130,6 +141,12 @@
       outline: none;
     }
 
+    .batch-select {
+      appearance: none;
+      cursor: pointer;
+    }
+
+    .batch-custom-input::placeholder,
     .search-input::placeholder {
       color: rgba(255, 255, 255, 0.5);
     }
@@ -194,7 +211,8 @@
       gap: 10px;
     }
 
-    .category-btn {
+    .category-btn,
+    .batch-size-btn {
       border: 1px solid var(--border);
       background: rgba(255, 255, 255, 0.06);
       color: var(--text);
@@ -210,7 +228,9 @@
     }
 
     .category-btn:hover,
-    .category-btn.active {
+    .category-btn.active,
+    .batch-size-btn:hover,
+    .batch-size-btn.active {
       background: var(--accent);
       border-color: var(--accent);
     }
@@ -272,34 +292,34 @@
       border: 1px solid var(--border);
       color: var(--muted);
       text-align: center;
+      margin-bottom: 16px;
     }
 
-    .recipe-panel {
+    .recipe-panel,
+    .batch-panel {
       display: none;
-      background: rgba(0, 0, 0, 0.55);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-xl);
-      padding: 18px;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(8px);
     }
 
-    .recipe-panel.active {
+    .recipe-panel.active,
+    .batch-panel.active {
       display: block;
     }
 
-    .recipe-head {
+    .recipe-head,
+    .batch-head {
       margin-bottom: 14px;
     }
 
-    .recipe-title {
+    .recipe-title,
+    .batch-title {
       margin: 0;
       font-size: clamp(24px, 4.8vw, 36px);
       font-weight: 900;
       line-height: 1.05;
     }
 
-    .recipe-category {
+    .recipe-category,
+    .batch-subtitle {
       margin-top: 8px;
       color: var(--muted);
       font-size: 14px;
@@ -307,22 +327,16 @@
       letter-spacing: 0.12em;
     }
 
-    .recipe-alcohol {
+    .recipe-alcohol,
+    .batch-output-meta {
       margin-top: 8px;
       color: var(--text);
       font-size: 15px;
       font-weight: 700;
     }
 
-    .recipe-layout {
-      display: block;
-    }
-
-    .recipe-text {
-      width: 100%;
-    }
-
-    .recipe-block {
+    .recipe-block,
+    .batch-block {
       background: var(--card-soft);
       border: 1px solid var(--border);
       border-radius: 18px;
@@ -330,7 +344,8 @@
       margin-bottom: 14px;
     }
 
-    .recipe-block h3 {
+    .recipe-block h3,
+    .batch-block h3 {
       margin: 0 0 10px;
       color: var(--accent);
       font-size: 13px;
@@ -339,23 +354,24 @@
     }
 
     .ingredients-list,
-    .steps-list {
+    .steps-list,
+    .batch-result-list,
+    .batch-note-list {
       margin: 0;
       padding-left: 20px;
     }
 
     .ingredients-list li,
-    .steps-list li {
+    .steps-list li,
+    .batch-result-list li,
+    .batch-note-list li {
       margin-bottom: 9px;
       line-height: 1.55;
       color: rgba(255, 255, 255, 0.92);
     }
 
-    .recipe-image {
-      margin-top: 16px;
-    }
-
-    .recipe-image img {
+    .recipe-image img,
+    .batch-image img {
       width: 100%;
       height: auto;
       max-height: 320px;
@@ -365,6 +381,48 @@
       background: #111;
       box-shadow: var(--shadow);
       display: block;
+    }
+
+    .recipe-image {
+      margin-top: 16px;
+    }
+
+    .batch-layout {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 14px;
+      align-items: start;
+    }
+
+    .batch-controls {
+      display: grid;
+      gap: 12px;
+    }
+
+    .batch-size-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .batch-custom-wrap {
+      display: none;
+    }
+
+    .batch-custom-wrap.active {
+      display: block;
+    }
+
+    .batch-output-highlight {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255, 51, 51, 0.12);
+      border: 1px solid rgba(255, 51, 51, 0.25);
+      font-size: 14px;
+      font-weight: 700;
     }
 
     .overlay {
@@ -430,14 +488,14 @@
       min-width: 760px;
     }
 
-.overlay-table th,
-.overlay-table td {
-  text-align: left;
-  vertical-align: top;
-  padding: 8px 8px; /* weniger Abstand */
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-  line-height: 1.35; /* kompakter */
-}
+    .overlay-table th,
+    .overlay-table td {
+      text-align: left;
+      vertical-align: top;
+      padding: 8px 8px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      line-height: 1.35;
+    }
 
     .overlay-table th {
       color: var(--accent);
@@ -445,16 +503,46 @@
       text-transform: uppercase;
       letter-spacing: 0.12em;
     }
-    
+
     .overlay-table td:first-child {
-  width: 160px;
-  font-weight: 700;
-}
+      width: 160px;
+      font-weight: 700;
+    }
 
     .overlay-table td {
       color: rgba(255, 255, 255, 0.92);
-      line-height: 1.5;
       white-space: pre-line;
+    }
+
+    #specialSelectionPreview {
+      display: grid;
+      gap: 12px;
+    }
+
+    .special-preview-group {
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: rgba(255,255,255,0.04);
+    }
+
+    .special-preview-group strong {
+      display: block;
+      color: var(--accent);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 12px;
+    }
+
+    .special-preview-group ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .special-preview-group li {
+      margin-bottom: 6px;
+      color: rgba(255,255,255,0.92);
     }
 
     .footer {
@@ -464,6 +552,12 @@
       font-size: 12px;
       text-transform: uppercase;
       letter-spacing: 0.18em;
+    }
+
+    @media (max-width: 860px) {
+      .batch-layout {
+        grid-template-columns: 1fr;
+      }
     }
 
     @media (max-width: 640px) {
@@ -490,12 +584,18 @@
         padding: 10px;
       }
 
-      .recipe-panel {
+      .recipe-panel,
+      .batch-panel {
         padding: 14px;
       }
 
-      .recipe-image img {
+      .recipe-image img,
+      .batch-image img {
         max-height: 240px;
+      }
+
+      .batch-size-row {
+        grid-template-columns: repeat(2, 1fr);
       }
     }
   </style>
@@ -509,10 +609,13 @@
           <button id="openIngredientsBtn" class="ingredients-btn" type="button">
             Inhaltsliste öffnen
           </button>
+          <button id="openSpecialGeneratorBtn" class="ingredients-btn" type="button">
+            Specials zufällig wählen
+          </button>
         </div>
       </div>
 
-      <div class="search-wrap">
+      <div class="search-wrap" id="searchWrap">
         <div class="search-box">
           <input
             id="searchInput"
@@ -532,11 +635,12 @@
         <button class="category-btn" data-category="MAIN-CHARACTER-ENERGY">Main Character</button>
         <button class="category-btn" data-category="SPIRIT-FORWARD">Spirit Forward</button>
         <button class="category-btn" data-category="ZERO-PROOF">Zero Proof</button>
+        <button class="category-btn" data-category="BATCHES">Batches / Mengen</button>
       </nav>
     </section>
 
     <section class="cocktail-section">
-      <h2 class="section-title">Cocktails</h2>
+      <h2 class="section-title" id="sectionTitle">Cocktails</h2>
 
       <div class="cocktail-grid" id="cocktailGrid">
         <button class="cocktail-tile visible" data-id="whiskey-sour" data-category="FRESH-ZESTY">Whiskey Sour</button>
@@ -585,20 +689,78 @@
           <div class="recipe-alcohol" id="recipeAlcohol">ca. 16 % vol</div>
         </div>
 
-        <div class="recipe-layout">
-          <div class="recipe-text">
-            <div class="recipe-block">
-              <h3>Inhalt</h3>
-              <ul class="ingredients-list" id="ingredientsList"></ul>
+        <div class="recipe-block">
+          <h3>Inhalt</h3>
+          <ul class="ingredients-list" id="ingredientsList"></ul>
+        </div>
+
+        <div class="recipe-block">
+          <h3>Schritt für Schritt</h3>
+          <ol class="steps-list" id="stepsList"></ol>
+        </div>
+
+        <div class="recipe-image">
+          <img id="recipeImage" src="https://images.pexels.com/photos/28834354/pexels-photo-28834354.jpeg" alt="Whiskey Sour">
+        </div>
+      </section>
+
+      <section class="batch-panel" id="batchPanel">
+        <div class="batch-head">
+          <h1 class="batch-title">Batches / Mengen</h1>
+          <div class="batch-subtitle">Cocktail auswählen und automatisch auf Liter hochrechnen</div>
+        </div>
+
+        <div class="batch-layout">
+          <div>
+            <div class="batch-block">
+              <h3>Auswahl</h3>
+
+              <div class="batch-controls">
+                <select id="batchRecipeSelect" class="batch-select"></select>
+
+                <div class="batch-size-row">
+                  <button class="batch-size-btn active" type="button" data-size="3">3 L</button>
+                  <button class="batch-size-btn" type="button" data-size="6">6 L</button>
+                  <button class="batch-size-btn" type="button" data-size="10">10 L</button>
+                  <button class="batch-size-btn" type="button" data-size="custom">frei</button>
+                </div>
+
+                <div class="batch-custom-wrap" id="batchCustomWrap">
+                  <input
+                    id="batchCustomInput"
+                    class="batch-custom-input"
+                    type="number"
+                    min="0.1"
+                    step="0.1"
+                    placeholder="Eigene Literzahl eingeben, z. B. 4.5"
+                  />
+                </div>
+
+                <div class="batch-output-highlight">
+                  Zielmenge: <span id="batchTargetLiters">3,0 L</span>
+                </div>
+              </div>
             </div>
 
-            <div class="recipe-block">
-              <h3>Schritt für Schritt</h3>
-              <ol class="steps-list" id="stepsList"></ol>
+            <div class="batch-block">
+              <h3 id="batchResultHeading">Batch-Mengen</h3>
+              <div class="batch-output-meta" id="batchOutputMeta">Basisrezept: ca. 150 ml</div>
+              <ul class="batch-result-list" id="batchResultList"></ul>
             </div>
 
-            <div class="recipe-image">
-              <img id="recipeImage" src="https://images.pexels.com/photos/28834354/pexels-photo-28834354.jpeg" alt="Whiskey Sour">
+            <div class="batch-block">
+              <h3>Hinweise</h3>
+              <ul class="batch-note-list" id="batchNoteList"></ul>
+            </div>
+          </div>
+
+          <div>
+            <div class="batch-block">
+              <h3 id="batchPreviewTitle">Whiskey Sour</h3>
+              <div class="batch-subtitle" id="batchPreviewSubtitle">Automatische Hochrechnung</div>
+              <div class="batch-image">
+                <img id="batchPreviewImage" src="garnish/whiskeySourGarnish.webp" alt="Batch Vorschau" />
+              </div>
             </div>
           </div>
         </div>
@@ -629,6 +791,43 @@
     </div>
   </div>
 
+  <div id="specialGeneratorOverlay" class="overlay">
+    <div class="overlay-content">
+      <div class="overlay-header">
+        <h2>Happy Hour & Cocktail des Abends</h2>
+        <button id="closeSpecialGeneratorBtn" class="close-btn" type="button">×</button>
+      </div>
+
+      <div class="overlay-table-wrap" style="padding-top:20px;">
+        <div class="recipe-block" style="margin-bottom:16px;">
+          <h3>Auswahl</h3>
+          <div id="specialSelectionPreview"></div>
+        </div>
+
+        <div class="recipe-block" style="margin-bottom:16px;">
+          <h3>Export</h3>
+          <pre id="specialExportOutput" style="
+            margin:0;
+            white-space:pre-wrap;
+            word-break:break-word;
+            font-family:Consolas, Monaco, monospace;
+            font-size:14px;
+            color:#fff;
+          "></pre>
+        </div>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap; padding-bottom:10px;">
+          <button id="generateSpecialsBtn" class="ingredients-btn" type="button">
+            Neu auslosen
+          </button>
+          <button id="copySpecialsBtn" class="ingredients-btn" type="button">
+            TXT kopieren
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     const recipes = {
       "whiskey-sour": {
@@ -636,12 +835,14 @@
         category: "Fresh & Zesty",
         alcoholVolume: "ca. 16 % vol",
         image: "garnish/whiskeySourGarnish.webp",
+        batchBaseMl: 150,
+        batchable: true,
         ingredients: [
-          "5 cl Whiskey (Standard: Jim Beam)",
-          "3 cl Pulco",
-          "2 cl Zuckersirup",
-          "1/2 Barspoon Eiweiß",
-          "2 Dashes Angostura Bitters"
+          { amount: 5, unit: "cl", name: "Whiskey (Standard: Jim Beam)" },
+          { amount: 3, unit: "cl", name: "Pulco" },
+          { amount: 2, unit: "cl", name: "Zuckersirup" },
+          { amount: 0.5, unit: "barspoon", name: "Eiweiß" },
+          { amount: 2, unit: "dash", name: "Angostura Bitters" }
         ],
         steps: [
           "Alle Zutaten in den Shaker geben.",
@@ -657,19 +858,21 @@
         category: "Fresh & Zesty",
         alcoholVolume: "ca. 17 % vol",
         image: "garnish/NewYorkSourGarnish.JPG.webp",
+        batchBaseMl: 140,
+        batchable: true,
         ingredients: [
-          "6 cl Whiskey (Standard: Jim Beam)",
-          "3 cl frischer Zitronensaft",
-          "2 cl Zuckersirup",
-          "1,5 cl Eiweiß optional",
-          "1,5 cl Rotwein oder Rotweinaperitif zum Floaten"
+          { amount: 6, unit: "cl", name: "Whiskey (Standard: Jim Beam)" },
+          { amount: 3, unit: "cl", name: "frischer Zitronensaft" },
+          { amount: 2, unit: "cl", name: "Zuckersirup" },
+          { amount: 1.5, unit: "cl", name: "Eiweiß optional" },
+          { amount: 1.5, unit: "cl", name: "Rotwein oder Rotweinaperitif zum Floaten" }
         ],
         steps: [
           "Whiskey, Zitronensaft, Zuckersirup und optional Eiweiß in den Shaker geben.",
           "Zuerst ohne Eis shaken, danach mit Eis erneut kräftig shaken.",
           "In ein Glas auf Eis abseihen.",
           "Den Rotwein oder Aperitif langsam oben auf den Drink floaten.",
-          "Mit getrockneter Limette und Hibiskusblüte garnieren"
+          "Mit getrockneter Limette und Hibiskusblüte garnieren."
         ]
       },
 
@@ -678,14 +881,16 @@
         category: "Fresh & Zesty",
         alcoholVolume: "ca. 18 % vol",
         image: "garnish/PiscoSour.webp",
+        batchBaseMl: 150,
+        batchable: true,
         ingredients: [
-          "6 cl Pisco",
-          "2,25 cl frischer Limettensaft",
-          "1,5 cl frischer Zitronensaft",
-          "1,5 cl Zuckersirup",
-          "2 cl Eiweiß",
-          "ggf. Saline",
-          "3 Tropfen Bitters "
+          { amount: 6, unit: "cl", name: "Pisco" },
+          { amount: 2.25, unit: "cl", name: "frischer Limettensaft" },
+          { amount: 1.5, unit: "cl", name: "frischer Zitronensaft" },
+          { amount: 1.5, unit: "cl", name: "Zuckersirup" },
+          { amount: 2, unit: "cl", name: "Eiweiß" },
+          { amount: 1, unit: "optional", name: "Saline" },
+          { amount: 3, unit: "dash", name: "Bitters" }
         ],
         steps: [
           "Pisco, Limettensaft, Zitronensaft, Zuckersirup, Eiweiß und ggf. Saline in den Shaker geben.",
@@ -701,18 +906,20 @@
         category: "Fresh & Zesty",
         alcoholVolume: "ca. 10 % vol",
         image: "garnish/MelonSourGarnish.JPG.webp",
+        batchBaseMl: 210,
+        batchable: true,
         ingredients: [
-          "2 cl Vodka",
-          "4 cl Melonenlikör",
-          "3 cl Zitronensaft",
-          "2 cl Melonensirup",
-          "10 cl Orangensaft"
+          { amount: 2, unit: "cl", name: "Vodka" },
+          { amount: 4, unit: "cl", name: "Melonenlikör" },
+          { amount: 3, unit: "cl", name: "Zitronensaft" },
+          { amount: 2, unit: "cl", name: "Melonensirup" },
+          { amount: 10, unit: "cl", name: "Orangensaft" }
         ],
         steps: [
           "Alle Zutaten mit Eis in einen Shaker geben.",
           "Kräftig shaken.",
-          "In ein TumblrGlas auf Eis abseihen.",
-          "Mit Physalis garnieren ."
+          "In ein Tumblerglas auf Eis abseihen.",
+          "Mit Physalis garnieren."
         ]
       },
 
@@ -721,18 +928,20 @@
         category: "Fresh & Zesty",
         alcoholVolume: "ca. 13 % vol",
         image: "garnish/GinFizzGarnish.JPG.webp",
+        batchBaseMl: 140,
+        batchable: true,
         ingredients: [
-          "5 cl Gin",
-          "2,25 cl frischer Zitronensaft",
-          "1,5 cl Zuckersirup",
-          "5-7 cl Soda Water"
+          { amount: 5, unit: "cl", name: "Gin" },
+          { amount: 2.25, unit: "cl", name: "frischer Zitronensaft" },
+          { amount: 1.5, unit: "cl", name: "Zuckersirup" },
+          { amount: 6, unit: "cl", name: "Soda Water" }
         ],
         steps: [
           "Gin, Zitronensaft und Zuckersirup mit Eis shaken.",
           "In ein Glas abseihen.",
           "Mit Soda Water auffüllen.",
           "Kurz umrühren.",
-          "Zitronenzeste ausdrücken und als garnierung on Top."
+          "Zitronenzeste ausdrücken und als Garnierung on top."
         ]
       },
 
@@ -741,17 +950,19 @@
         category: "Vacay Vibes",
         alcoholVolume: "ca. 18 % vol",
         image: "garnish/MaiTaiGarnish.JPG.webp",
+        batchBaseMl: 157.5,
+        batchable: true,
         ingredients: [
-          "6 cl Rum-Mischung",
-          "2,25 cl frischer Limettensaft",
-          "1,5 cl Mandelsirup",
-          "7 cl Ananassaft"
+          { amount: 6, unit: "cl", name: "Rum-Mischung" },
+          { amount: 2.25, unit: "cl", name: "frischer Limettensaft" },
+          { amount: 1.5, unit: "cl", name: "Mandelsirup" },
+          { amount: 7, unit: "cl", name: "Ananassaft" }
         ],
         steps: [
           "Alle Zutaten mit Eis in den Shaker geben.",
           "Kräftig shaken.",
           "In ein Glas auf Eis abseihen.",
-          "flambierte, getrocknete Orange auf den Schaum legen"
+          "Flambierte, getrocknete Orange auf den Schaum legen."
         ]
       },
 
@@ -760,18 +971,20 @@
         category: "Vacay Vibes",
         alcoholVolume: "ca. 22 % vol",
         image: "garnish/Zombie-Garnish.webp",
+        batchBaseMl: 120,
+        batchable: true,
         ingredients: [
-          "6 cl Rum-Vormischung",
-          "3 cl Ananassaft",
-          "2 cl Limettensaft",
-          "1 cl Grenadine",
-          "2 Dashes Orange Bitters"
+          { amount: 6, unit: "cl", name: "Rum-Vormischung" },
+          { amount: 3, unit: "cl", name: "Ananassaft" },
+          { amount: 2, unit: "cl", name: "Limettensaft" },
+          { amount: 1, unit: "cl", name: "Grenadine" },
+          { amount: 2, unit: "dash", name: "Orange Bitters" }
         ],
         steps: [
           "Alle Zutaten mit Eis shaken.",
           "In ein großes Glas auf Eis geben.",
           "Kurz umrühren.",
-          "Flambierte Orange hochkant an der Seite"
+          "Flambierte Orange hochkant an der Seite platzieren."
         ]
       },
 
@@ -780,11 +993,13 @@
         category: "Vacay Vibes",
         alcoholVolume: "ca. 10 % vol",
         image: "garnish/bluelagoonGarnish.webp",
+        batchBaseMl: 180,
+        batchable: true,
         ingredients: [
-          "4 cl Vodka",
-          "2 cl Blue Curaçao",
-          "2 cl Zitronensaft",
-          "10 cl Sprite"
+          { amount: 4, unit: "cl", name: "Vodka" },
+          { amount: 2, unit: "cl", name: "Blue Curaçao" },
+          { amount: 2, unit: "cl", name: "Zitronensaft" },
+          { amount: 10, unit: "cl", name: "Sprite" }
         ],
         steps: [
           "Vodka, Blue Curaçao und Zitronensaft mit Eis ins Glas geben.",
@@ -799,17 +1014,19 @@
         category: "Vacay Vibes",
         alcoholVolume: "ca. 9 % vol",
         image: "garnish/pinia_colada_garnish.JPG.webp",
+        batchBaseMl: 170,
+        batchable: true,
         ingredients: [
-          "6 cl heller Rum",
-          "2 cl Kokossirup",
-          "2 cl Sahne",
-          "7 cl Ananassaft"
+          { amount: 6, unit: "cl", name: "heller Rum" },
+          { amount: 2, unit: "cl", name: "Kokossirup" },
+          { amount: 2, unit: "cl", name: "Sahne" },
+          { amount: 7, unit: "cl", name: "Ananassaft" }
         ],
         steps: [
           "Alle Zutaten mit Eis in den Shaker geben.",
           "Kräftig shaken.",
           "In ein großes Glas füllen.",
-          "Falls vorhanden Kokosraspeln garnieren"
+          "Falls vorhanden mit Kokosraspeln garnieren."
         ]
       },
 
@@ -818,18 +1035,20 @@
         category: "Vacay Vibes",
         alcoholVolume: "ca. 11 % vol",
         image: "garnish/Daiquirisgarnish.webp",
+        batchBaseMl: 140,
+        batchable: true,
         ingredients: [
-          "5 cl Rum",
-          "4 cl Fruchtpüree Mango oder Erdbeere",
-          "2 cl Fruchtsirup",
-          "2 cl Limettensaft",
-          "1 cl Zitronensaft"
+          { amount: 5, unit: "cl", name: "Rum" },
+          { amount: 4, unit: "cl", name: "Fruchtpüree Mango oder Erdbeere" },
+          { amount: 2, unit: "cl", name: "Fruchtsirup" },
+          { amount: 2, unit: "cl", name: "Limettensaft" },
+          { amount: 1, unit: "cl", name: "Zitronensaft" }
         ],
         steps: [
           "Alle Zutaten zusammen mit reichlich Eis in den Mixer geben.",
           "Fein und cremig mixen.",
           "In ein Glas füllen.",
-          "Mango mit 2 Minzblättern /Erdbeere mit 2 Minzblättern + Blaubeeren garnieren."
+          "Mango mit 2 Minzblättern / Erdbeere mit 2 Minzblättern + Blaubeeren garnieren."
         ]
       },
 
@@ -838,19 +1057,21 @@
         category: "Vacay Vibes",
         alcoholVolume: "ca. 14 % vol",
         image: "garnish/BahamaMamaGarnish.webp",
+        batchBaseMl: 165,
+        batchable: true,
         ingredients: [
-          "3 cl Rum",
-          "2 cl Malibu",
-          "1,5 cl Grenadine",
-          "2 cl Zitronensaft",
-          "5 cl Ananassaft",
-          "3 cl Orangensaft"
+          { amount: 3, unit: "cl", name: "Rum" },
+          { amount: 2, unit: "cl", name: "Malibu" },
+          { amount: 1.5, unit: "cl", name: "Grenadine" },
+          { amount: 2, unit: "cl", name: "Zitronensaft" },
+          { amount: 5, unit: "cl", name: "Ananassaft" },
+          { amount: 3, unit: "cl", name: "Orangensaft" }
         ],
         steps: [
           "Alle Zutaten mit Eis in den Shaker geben.",
           "Kräftig shaken.",
           "In ein Glas mit Eis abseihen.",
-          "Kokosraspeln."
+          "Mit Kokosraspeln garnieren."
         ]
       },
 
@@ -859,17 +1080,19 @@
         category: "Vacay Vibes",
         alcoholVolume: "ca. 9 % vol",
         image: "garnish/Solero-Garnish.webp",
+        batchBaseMl: 155,
+        batchable: true,
         ingredients: [
-          "4,5 cl Vodka",
-          "2 cl Vanillesirup",
-          "1 cl Zitronensaft",
-          "8 cl Maracujasaft"
+          { amount: 4.5, unit: "cl", name: "Vodka" },
+          { amount: 2, unit: "cl", name: "Vanillesirup" },
+          { amount: 1, unit: "cl", name: "Zitronensaft" },
+          { amount: 8, unit: "cl", name: "Maracujasaft" }
         ],
         steps: [
           "Vodka, Vanillesirup und Zitronensaft mit Eis shaken.",
           "In ein Glas abseihen.",
           "Mit Maracujasaft auffüllen.",
-          "getrocknete Orange on Top."
+          "Getrocknete Orange on top."
         ]
       },
 
@@ -878,10 +1101,12 @@
         category: "Spirit Forward",
         alcoholVolume: "ca. 24 % vol",
         image: "garnish/Negroni_garnish.JPG.webp",
+        batchBaseMl: 90,
+        batchable: true,
         ingredients: [
-          "3 cl Gin",
-          "3 cl Campari",
-          "3 cl roter Wermut"
+          { amount: 3, unit: "cl", name: "Gin" },
+          { amount: 3, unit: "cl", name: "Campari" },
+          { amount: 3, unit: "cl", name: "roter Wermut" }
         ],
         steps: [
           "Alle Zutaten in ein Rührglas mit Eis geben.",
@@ -896,16 +1121,18 @@
         category: "Spirit Forward",
         alcoholVolume: "ca. 28 % vol",
         image: "garnish/MartiniGarnish.JPG.webp",
+        batchBaseMl: 70,
+        batchable: true,
         ingredients: [
-          "5 1/2 cl Gin",
-          "1 1/2 cl trockener Wermut",
-          "2 Tropfen Saline"
+          { amount: 5.5, unit: "cl", name: "Gin" },
+          { amount: 1.5, unit: "cl", name: "trockener Wermut" },
+          { amount: 2, unit: "dash", name: "Saline" }
         ],
         steps: [
           "Gin, trockenen Wermut und Saline in ein Rührglas mit Eis geben.",
           "Sehr kalt rühren.",
           "In eine gekühlte Cocktailschale abseihen.",
-          "Mit 2 Oliven (zahnstpcher) garnieren.",
+          "Mit 2 Oliven garnieren.",
           "Servieren."
         ]
       },
@@ -915,16 +1142,18 @@
         category: "Spirit Forward",
         alcoholVolume: "ca. 25 % vol",
         image: "garnish/Negroni_garnish.JPG.webp",
+        batchBaseMl: 90,
+        batchable: true,
         ingredients: [
-          "3 cl Bourbon Whiskey",
-          "3 cl roter Wermut",
-          "3 cl Campari"
+          { amount: 3, unit: "cl", name: "Bourbon Whiskey" },
+          { amount: 3, unit: "cl", name: "roter Wermut" },
+          { amount: 3, unit: "cl", name: "Campari" }
         ],
         steps: [
           "Alle Zutaten in ein Rührglas mit Eis geben.",
           "Gut kalt rühren.",
           "In ein Tumblerglas auf Eis abseihen.",
-         "Orangenzeste ausdrücken, über den Rand gehen und garnieren."
+          "Orangenzeste ausdrücken, über den Rand gehen und garnieren."
         ]
       },
 
@@ -933,20 +1162,22 @@
         category: "Party Favorites",
         alcoholVolume: "ca. 18 % vol",
         image: "garnish/LongIslandIceTeaGarnish.JPG.webp",
+        batchBaseMl: 190,
+        batchable: true,
         ingredients: [
-          "7 cl Vormischung",
-          "2 cl Zitronensaft",
-          "1 cl Lime Juice",
-          "3 cl Orangensaft",
-          "Cola zum Auffüllen"
+          { amount: 7, unit: "cl", name: "Vormischung" },
+          { amount: 2, unit: "cl", name: "Zitronensaft" },
+          { amount: 1, unit: "cl", name: "Lime Juice" },
+          { amount: 3, unit: "cl", name: "Orangensaft" },
+          { amount: 6, unit: "cl", name: "Cola zum Auffüllen" }
         ],
         steps: [
           "Alle Zutaten außer Cola mit Eis in den Shaker geben.",
           "Kurz shaken.",
           "In ein großes Glas auf Eis geben.",
           "Mit Cola auffüllen.",
-          "Kurz umrühren."
-          "Mit flambierter getr. Orange garnieren"
+          "Kurz umrühren.",
+          "Mit flambierter getrockneter Orange garnieren."
         ]
       },
 
@@ -955,11 +1186,13 @@
         category: "Party Favorites",
         alcoholVolume: "ca. 10 % vol",
         image: "garnish/MoscowMuleGarnish.JPG.webp",
+        batchBaseMl: 155,
+        batchable: true,
         ingredients: [
-          "5 cl Vodka",
-          "1,5 cl Limettensaft",
-          "7 cl Ginger Beer",
-          "2 Gurkenscheiben"
+          { amount: 5, unit: "cl", name: "Vodka" },
+          { amount: 1.5, unit: "cl", name: "Limettensaft" },
+          { amount: 7, unit: "cl", name: "Ginger Beer" },
+          { amount: 2, unit: "piece", name: "Gurkenscheiben" }
         ],
         steps: [
           "Vodka und Limettensaft in ein Glas auf Eis geben.",
@@ -974,12 +1207,14 @@
         category: "Party Favorites",
         alcoholVolume: "ca. 11 % vol",
         image: "garnish/MojitoGarnish.JPG.webp",
+        batchBaseMl: 170,
+        batchable: true,
         ingredients: [
-          "5 cl weißer Rum",
-          "3-4 Limettenachtel",
-          "1 Barlöffel Rohrzucker",
-          "8-10 Minzblätter",
-          "Soda Water zum Auffüllen"
+          { amount: 5, unit: "cl", name: "weißer Rum" },
+          { amount: 4, unit: "piece", name: "Limettenachtel" },
+          { amount: 1, unit: "barspoon", name: "Rohrzucker" },
+          { amount: 9, unit: "piece", name: "Minzblätter" },
+          { amount: 8, unit: "cl", name: "Soda Water zum Auffüllen" }
         ],
         steps: [
           "Limette, Rohrzucker und Minze ins Glas geben.",
@@ -997,10 +1232,12 @@
         category: "Party Favorites",
         alcoholVolume: "ca. 14 % vol",
         image: "garnish/CaipirinhaGarnish.webp",
+        batchBaseMl: 120,
+        batchable: true,
         ingredients: [
-          "5 cl Cachaça",
-          "4 Limettenachtel in Stücken",
-          "2 Barlöffel Rohrzucker"
+          { amount: 5, unit: "cl", name: "Cachaça" },
+          { amount: 4, unit: "piece", name: "Limettenachtel in Stücken" },
+          { amount: 2, unit: "barspoon", name: "Rohrzucker" }
         ],
         steps: [
           "Limette und Rohrzucker ins Glas geben.",
@@ -1017,11 +1254,13 @@
         category: "Party Favorites",
         alcoholVolume: "ca. 10 % vol",
         image: "garnish/CubaLibreGarnish.webp",
+        batchBaseMl: 160,
+        batchable: true,
         ingredients: [
-          "5 cl Rum",
-          "2-3 Limettenachtel",
-          "1 cl Limettensaft",
-          "Cola zum Auffüllen"
+          { amount: 5, unit: "cl", name: "Rum" },
+          { amount: 3, unit: "piece", name: "Limettenachtel" },
+          { amount: 1, unit: "cl", name: "Limettensaft" },
+          { amount: 10, unit: "cl", name: "Cola zum Auffüllen" }
         ],
         steps: [
           "Ein Glas mit Eis füllen.",
@@ -1036,17 +1275,19 @@
         category: "Party Favorites",
         alcoholVolume: "ca. 9 % vol",
         image: "garnish/TequilaSUnriseGarnish.webp",
+        batchBaseMl: 170,
+        batchable: true,
         ingredients: [
-          "5 cl Tequila",
-          "10 cl Orangensaft",
-          "1 cl Zitronensaft",
-          "1 cl Grenadine"
+          { amount: 5, unit: "cl", name: "Tequila" },
+          { amount: 10, unit: "cl", name: "Orangensaft" },
+          { amount: 1, unit: "cl", name: "Zitronensaft" },
+          { amount: 1, unit: "cl", name: "Grenadine" }
         ],
         steps: [
           "Tequila, Orangensaft und Zitronensaft mit Eis shaken.",
           "In ein Glas auf Eis abseihen.",
           "Grenadine langsam eingießen.",
-          "Physalis und orange garnieren"
+          "Mit Physalis und Orange garnieren."
         ]
       },
 
@@ -1055,13 +1296,15 @@
         category: "Party Favorites",
         alcoholVolume: "ca. 9 % vol",
         image: "garnish/SexontheBeachGarnish.JPG.webp",
+        batchBaseMl: 170,
+        batchable: true,
         ingredients: [
-          "4 cl Vodka",
-          "2 cl Pfirsichlikör",
-          "1 cl Zitronensaft",
-          "2 cl Grenadine",
-          "3 cl Cranberrysaft",
-          "5 cl Orangensaft"
+          { amount: 4, unit: "cl", name: "Vodka" },
+          { amount: 2, unit: "cl", name: "Pfirsichlikör" },
+          { amount: 1, unit: "cl", name: "Zitronensaft" },
+          { amount: 2, unit: "cl", name: "Grenadine" },
+          { amount: 3, unit: "cl", name: "Cranberrysaft" },
+          { amount: 5, unit: "cl", name: "Orangensaft" }
         ],
         steps: [
           "Alle Zutaten mit Eis shaken.",
@@ -1075,12 +1318,14 @@
         category: "Party Favorites",
         alcoholVolume: "ca. 10 % vol",
         image: "https://images.unsplash.com/photo-1546173159-315724a31696?auto=format&fit=crop&w=300&q=80",
+        batchBaseMl: 165,
+        batchable: true,
         ingredients: [
-          "4 cl Vodka",
-          "2 cl Pfirsichlikör",
-          "1 cl Zitronensaft",
-          "1,5 cl Grenadine",
-          "8 cl Maracujasaft"
+          { amount: 4, unit: "cl", name: "Vodka" },
+          { amount: 2, unit: "cl", name: "Pfirsichlikör" },
+          { amount: 1, unit: "cl", name: "Zitronensaft" },
+          { amount: 1.5, unit: "cl", name: "Grenadine" },
+          { amount: 8, unit: "cl", name: "Maracujasaft" }
         ],
         steps: [
           "Alle Zutaten mit Eis in den Shaker geben.",
@@ -1095,17 +1340,19 @@
         category: "Party Favorites",
         alcoholVolume: "ca. 10 % vol",
         image: "garnish/PalomaGarnish.JPG.webp",
+        batchBaseMl: 170,
+        batchable: true,
         ingredients: [
-          "5 cl Tequila",
-          "2 cl Limettensaft",
-          "10 cl Grapefruit-Limonade"
+          { amount: 5, unit: "cl", name: "Tequila" },
+          { amount: 2, unit: "cl", name: "Limettensaft" },
+          { amount: 10, unit: "cl", name: "Grapefruit-Limonade" }
         ],
         steps: [
-          "Glas in Himbeerzucker rimmen",
+          "Glas in Himbeerzucker rimmen.",
           "Tequila und Limettensaft mit Eis ins Glas geben.",
           "Mit Grapefruit-Limonade auffüllen.",
           "Kurz umrühren.",
-          "getrocknete Limette servieren."
+          "Mit getrockneter Limette servieren."
         ]
       },
 
@@ -1114,19 +1361,21 @@
         category: "Main Character Energy",
         alcoholVolume: "ca. 15 % vol",
         image: "garnish/pornstarGarnish.JPG.webp",
+        batchBaseMl: 145,
+        batchable: true,
         ingredients: [
-          "4 cl Vodka",
-          "2 cl Passionsfruchtlikör",
-          "1 cl Zitronensaft",
-          "1/2 Barspoon Püree",
-          "1 cl Vanillesirup",
-          "2 cl Maracujasaft",
-          "4 cl Sekt separat"
+          { amount: 4, unit: "cl", name: "Vodka" },
+          { amount: 2, unit: "cl", name: "Passionsfruchtlikör" },
+          { amount: 1, unit: "cl", name: "Zitronensaft" },
+          { amount: 0.5, unit: "barspoon", name: "Püree" },
+          { amount: 1, unit: "cl", name: "Vanillesirup" },
+          { amount: 2, unit: "cl", name: "Maracujasaft" },
+          { amount: 4, unit: "cl", name: "Sekt separat" }
         ],
         steps: [
           "Alles außer Sekt mit Eis shaken.",
           "In ein Martiniglas abseihen.",
-          "wenn möglich gezwirbelte Zeste am Rand",
+          "Wenn möglich gezwirbelte Zeste am Rand anbringen.",
           "Den Sekt separat dazu servieren."
         ]
       },
@@ -1136,11 +1385,13 @@
         category: "Main Character Energy",
         alcoholVolume: "ca. 16 % vol",
         image: "https://images.pexels.com/photos/34429981/pexels-photo-34429981/free-photo-of-classic-espresso-martini-on-marble-table.jpeg",
+        batchBaseMl: 90,
+        batchable: true,
         ingredients: [
-          "3 cl Vodka",
-          "2 cl Kaffeelikör/ 43 Baristo falls vanillenote ",
-          "3 cl frischer Espresso",
-          "1 cl Zuckersirup"
+          { amount: 3, unit: "cl", name: "Vodka" },
+          { amount: 2, unit: "cl", name: "Kaffeelikör / 43 Baristo" },
+          { amount: 3, unit: "cl", name: "frischer Espresso" },
+          { amount: 1, unit: "cl", name: "Zuckersirup" }
         ],
         steps: [
           "Alle Zutaten mit Eis in den Shaker geben.",
@@ -1155,17 +1406,19 @@
         category: "Main Character Energy",
         alcoholVolume: "ca. 18 % vol",
         image: "garnish/MargharitaGarnish.JPG.webp",
+        batchBaseMl: 100,
+        batchable: true,
         ingredients: [
-          "5 cl Tequila",
-          "2 cl Triple Sec",
-          "2,5 cl Limettensaft",
-          "0,5 cl Zuckersirup optional"
+          { amount: 5, unit: "cl", name: "Tequila" },
+          { amount: 2, unit: "cl", name: "Triple Sec" },
+          { amount: 2.5, unit: "cl", name: "Limettensaft" },
+          { amount: 0.5, unit: "cl", name: "Zuckersirup optional" }
         ],
         steps: [
           "Das Glas mit einem Salzrand versehen.",
           "Alle Zutaten mit Eis shaken.",
           "In das vorbereitete Glas abseihen.",
-          "getrocknete Limette und LimettenZeste"
+          "Mit getrockneter Limette und Limettenzeste garnieren."
         ]
       },
 
@@ -1174,50 +1427,56 @@
         category: "Zero Proof",
         alcoholVolume: "0,0 % vol",
         image: "garnish/Ipanemagarnish.JPG.webp",
+        batchBaseMl: 180,
+        batchable: true,
         ingredients: [
-          "2 Barlöffel Rohrzucker",
-          "1 Limette in Stücken",
-          "8 cl Maracujasaft",
-          "Ginger Ale zum Auffüllen"
+          { amount: 2, unit: "barspoon", name: "Rohrzucker" },
+          { amount: 1, unit: "piece", name: "Limette in Stücken" },
+          { amount: 8, unit: "cl", name: "Maracujasaft" },
+          { amount: 8, unit: "cl", name: "Ginger Ale zum Auffüllen" }
         ],
         steps: [
           "Limette und Rohrzucker ins Glas geben.",
           "Leicht andrücken.",
           "Eis hinzufügen.",
           "Maracujasaft und Ginger Ale eingießen.",
-          "Kurz umrühren mit Physalis und orange servieren."
+          "Kurz umrühren und mit Physalis und Orange servieren."
         ]
       },
 
-"maracuja-mule": {
-  title: "Maracuja Mule",
-  category: "Zero Proof",
-  alcoholVolume: "0,0 % vol",
-  image: "garnish/MaracujaMuleGarnish.JPG.webp",
-  ingredients: [
-    "2 cl Limettensaft",
-    "8 cl Maracujasaft",
-    "2 cl Mangosirup",
-    "Ginger Beer zum Auffüllen"
-  ],
-  steps: [
-    "Ein Glas mit Eis füllen.",
-    "Limettensaft, Mangosirup und Maracujasaft ins Glas geben.",
-    "Kurz umrühren.",
-    "Mit Ginger Beer auffüllen.",
-    "mit getrockneter Orange Servieren."
-  ]
-},
+      "maracuja-mule": {
+        title: "Maracuja Mule",
+        category: "Zero Proof",
+        alcoholVolume: "0,0 % vol",
+        image: "garnish/MaracujaMuleGarnish.JPG.webp",
+        batchBaseMl: 170,
+        batchable: true,
+        ingredients: [
+          { amount: 2, unit: "cl", name: "Limettensaft" },
+          { amount: 8, unit: "cl", name: "Maracujasaft" },
+          { amount: 2, unit: "cl", name: "Mangosirup" },
+          { amount: 8, unit: "cl", name: "Ginger Beer zum Auffüllen" }
+        ],
+        steps: [
+          "Ein Glas mit Eis füllen.",
+          "Limettensaft, Mangosirup und Maracujasaft ins Glas geben.",
+          "Kurz umrühren.",
+          "Mit Ginger Beer auffüllen.",
+          "Mit getrockneter Orange servieren."
+        ]
+      },
 
       "virgin-colada": {
         title: "Virgin Colada",
         category: "Zero Proof",
         alcoholVolume: "0,0 % vol",
         image: "https://images.pexels.com/photos/10986589/pexels-photo-10986589.jpeg",
+        batchBaseMl: 150,
+        batchable: true,
         ingredients: [
-          "2 cl Sahne",
-          "3 cl Kokossirup",
-          "10 cl Ananassaft"
+          { amount: 2, unit: "cl", name: "Sahne" },
+          { amount: 3, unit: "cl", name: "Kokossirup" },
+          { amount: 10, unit: "cl", name: "Ananassaft" }
         ],
         steps: [
           "Alle Zutaten mit Eis mixen oder shaken.",
@@ -1232,6 +1491,11 @@
     const searchInput = document.getElementById("searchInput");
     const searchSuggestions = document.getElementById("searchSuggestions");
     const emptyState = document.getElementById("emptyState");
+    const sectionTitle = document.getElementById("sectionTitle");
+    const searchWrap = document.getElementById("searchWrap");
+
+    const recipePanel = document.getElementById("recipePanel");
+    const batchPanel = document.getElementById("batchPanel");
 
     const recipeTitle = document.getElementById("recipeTitle");
     const recipeCategory = document.getElementById("recipeCategory");
@@ -1245,11 +1509,54 @@
     const closeIngredientsBtn = document.getElementById("closeIngredientsBtn");
     const overlayTableBody = document.getElementById("overlayTableBody");
 
-    let activeCategory = "all";
+    const openSpecialGeneratorBtn = document.getElementById("openSpecialGeneratorBtn");
+    const specialGeneratorOverlay = document.getElementById("specialGeneratorOverlay");
+    const closeSpecialGeneratorBtn = document.getElementById("closeSpecialGeneratorBtn");
+    const generateSpecialsBtn = document.getElementById("generateSpecialsBtn");
+    const copySpecialsBtn = document.getElementById("copySpecialsBtn");
+    const specialSelectionPreview = document.getElementById("specialSelectionPreview");
+    const specialExportOutput = document.getElementById("specialExportOutput");
+
+    const batchRecipeSelect = document.getElementById("batchRecipeSelect");
+    const batchSizeButtons = document.querySelectorAll(".batch-size-btn");
+    const batchCustomWrap = document.getElementById("batchCustomWrap");
+    const batchCustomInput = document.getElementById("batchCustomInput");
+    const batchTargetLiters = document.getElementById("batchTargetLiters");
+    const batchResultHeading = document.getElementById("batchResultHeading");
+    const batchOutputMeta = document.getElementById("batchOutputMeta");
+    const batchResultList = document.getElementById("batchResultList");
+    const batchNoteList = document.getElementById("batchNoteList");
+    const batchPreviewTitle = document.getElementById("batchPreviewTitle");
+    const batchPreviewSubtitle = document.getElementById("batchPreviewSubtitle");
+    const batchPreviewImage = document.getElementById("batchPreviewImage");
+
+    let activeCategory = "PARTY-FAVORITES";
+    let activeBatchSize = "3";
+
+    function formatNumber(value) {
+      if (Number.isInteger(value)) return String(value).replace(".", ",");
+      return value
+        .toFixed(2)
+        .replace(/\.00$/, "")
+        .replace(/(\.\d)0$/, "$1")
+        .replace(".", ",");
+    }
+
+    function formatLiters(value) {
+      return `${formatNumber(value)} L`;
+    }
+
+    function ingredientToText(ingredient) {
+      if (!ingredient || ingredient.amount == null) return ingredient.name || "";
+      return `${formatNumber(ingredient.amount)} ${ingredient.unit} ${ingredient.name}`;
+    }
 
     function showRecipe(id) {
       const recipe = recipes[id];
       if (!recipe) return;
+
+      recipePanel.classList.add("active");
+      batchPanel.classList.remove("active");
 
       recipeTitle.textContent = recipe.title;
       recipeCategory.textContent = recipe.category;
@@ -1258,7 +1565,7 @@
       recipeImage.alt = recipe.title;
 
       ingredientsList.innerHTML = recipe.ingredients
-        .map(item => `<li>${item}</li>`)
+        .map(item => `<li>${ingredientToText(item)}</li>`)
         .join("");
 
       stepsList.innerHTML = recipe.steps
@@ -1275,7 +1582,7 @@
         recipe.title,
         recipe.category,
         recipe.alcoholVolume || "",
-        ...(recipe.ingredients || []),
+        ...(recipe.ingredients || []).map(ingredientToText),
         ...(recipe.steps || [])
       ].join(" ").toLowerCase();
 
@@ -1283,6 +1590,12 @@
     }
 
     function renderSuggestions() {
+      if (activeCategory === "BATCHES") {
+        searchSuggestions.innerHTML = "";
+        searchSuggestions.classList.remove("active");
+        return;
+      }
+
       const term = searchInput.value.trim().toLowerCase();
 
       if (!term) {
@@ -1320,7 +1633,7 @@
           searchSuggestions.innerHTML = "";
           searchSuggestions.classList.remove("active");
 
-          document.getElementById("recipePanel").scrollIntoView({
+          recipePanel.scrollIntoView({
             behavior: "smooth",
             block: "start"
           });
@@ -1329,6 +1642,25 @@
     }
 
     function filterCocktails() {
+      if (activeCategory === "BATCHES") {
+        cocktailTiles.forEach(tile => {
+          tile.classList.remove("visible");
+          tile.classList.remove("active");
+        });
+
+        emptyState.style.display = "none";
+        recipePanel.classList.remove("active");
+        batchPanel.classList.add("active");
+        searchWrap.style.display = "none";
+        sectionTitle.textContent = "Batches / Mengen";
+        return;
+      }
+
+      recipePanel.classList.add("active");
+      batchPanel.classList.remove("active");
+      searchWrap.style.display = "block";
+      sectionTitle.textContent = "Cocktails";
+
       const term = searchInput.value.trim().toLowerCase();
       let visibleCount = 0;
 
@@ -1342,7 +1674,7 @@
         if (term) {
           shouldShow = recipe && recipeMatchesSearch(recipe, term);
         } else {
-          shouldShow = activeCategory === "all" || category === activeCategory;
+          shouldShow = category === activeCategory;
         }
 
         if (shouldShow) {
@@ -1366,9 +1698,222 @@
       overlayTableBody.innerHTML = sortedRecipes.map(recipe => `
         <tr>
           <td>${recipe.title}</td>
-          <td>${recipe.ingredients.join("\n")}</td>
+          <td>${recipe.ingredients.map(ingredientToText).join("\n")}</td>
         </tr>
       `).join("");
+    }
+
+    function buildBatchOptions() {
+      const autoRecipes = Object.entries(recipes)
+        .filter(([, recipe]) => recipe.batchable)
+        .sort((a, b) => a[1].title.localeCompare(b[1].title, "de"))
+        .map(([id, recipe]) => ({
+          value: id,
+          label: recipe.title
+        }));
+
+      batchRecipeSelect.innerHTML = autoRecipes
+        .map(item => `<option value="${item.value}">${item.label}</option>`)
+        .join("");
+    }
+
+    function getSelectedBatchLiters() {
+      if (activeBatchSize === "custom") {
+        const custom = parseFloat(String(batchCustomInput.value).replace(",", "."));
+        return custom > 0 ? custom : 3;
+      }
+      return parseFloat(activeBatchSize);
+    }
+
+    function convertIngredientAmount(amount, unit, factor) {
+      const scaled = amount * factor;
+
+      if (unit === "cl") {
+        const ml = scaled * 10;
+        if (ml >= 1000) return `${formatNumber(ml / 1000)} l`;
+        return `${formatNumber(ml)} ml`;
+      }
+
+      if (unit === "dash") return `${formatNumber(scaled)} Dashes`;
+      if (unit === "barspoon") return `${formatNumber(scaled)} Barspoon`;
+      if (unit === "piece") return `${formatNumber(scaled)} Stück`;
+      if (unit === "optional") return `optional / nach Gefühl`;
+
+      return `${formatNumber(scaled)} ${unit}`;
+    }
+
+    function renderBatchCalculator() {
+      const id = batchRecipeSelect.value;
+      const liters = getSelectedBatchLiters();
+      const recipe = recipes[id];
+      if (!recipe) return;
+
+      batchTargetLiters.textContent = formatLiters(liters);
+
+      if (activeBatchSize === "custom") {
+        batchCustomWrap.classList.add("active");
+      } else {
+        batchCustomWrap.classList.remove("active");
+      }
+
+      const factor = (liters * 1000) / recipe.batchBaseMl;
+
+      batchResultHeading.textContent = "Batch-Mengen";
+      batchOutputMeta.textContent = `Basisrezept: ca. ${formatNumber(recipe.batchBaseMl)} ml · Faktor ${formatNumber(factor)}`;
+      batchPreviewTitle.textContent = recipe.title;
+      batchPreviewSubtitle.textContent = "Automatische Hochrechnung";
+      batchPreviewImage.src = recipe.image;
+      batchPreviewImage.alt = recipe.title;
+
+      batchResultList.innerHTML = recipe.ingredients.map(item => {
+        const text = convertIngredientAmount(item.amount, item.unit, factor);
+        return `<li><strong>${text}</strong> ${item.name}</li>`;
+      }).join("");
+
+      batchNoteList.innerHTML = [
+        "Die Berechnung nutzt die hinterlegte ungefähre Basis-Drinkmenge.",
+        "Frische Zutaten, Kohlensäure und Garnish bei Bedarf erst später ergänzen.",
+        "Bei Sprudel, Cola, Soda oder Ginger Beer kann es sinnvoll sein, diese erst beim Servieren oder kurz vor Ausgabe zuzugeben.",
+        "Für Eisverdünnung ggf. etwas Wasser zusätzlich einplanen."
+      ].map(note => `<li>${note}</li>`).join("");
+    }
+
+    function shuffleArray(array) {
+      const copy = [...array];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function pickRandom(array) {
+      if (!array.length) return null;
+      return array[Math.floor(Math.random() * array.length)];
+    }
+
+    function formatRecipeTitleById(id) {
+      return recipes[id] ? recipes[id].title : id;
+    }
+
+    function generateSpecialSelection() {
+      const happyHourBlocked = new Set([
+        "mai-tai",
+        "long-island",
+        "zombie",
+        "mojito",
+        "pornstar-martini",
+        "negroni",
+        "whiskey-sour",
+        "pisco-sour",
+        "paloma",
+        "caipirinha"
+      ]);
+
+      const eveningBlocked = new Set([
+        "mai-tai",
+        "long-island",
+        "zombie",
+        "mojito"
+      ]);
+
+      const allAlcoholicEntries = Object.entries(recipes).filter(([, recipe]) => {
+        return recipe.category !== "Zero Proof";
+      });
+
+      const happyHourAlcoholicPool = allAlcoholicEntries
+        .filter(([id]) => !happyHourBlocked.has(id));
+
+      const vacayPool = happyHourAlcoholicPool
+        .filter(([, recipe]) => recipe.category === "Vacay Vibes");
+
+      const remainingHappyPool = happyHourAlcoholicPool;
+
+      const virginPool = Object.entries(recipes)
+        .filter(([, recipe]) => recipe.category === "Zero Proof");
+
+      const eveningPool = allAlcoholicEntries
+        .filter(([id]) => !eveningBlocked.has(id));
+
+      if (vacayPool.length < 1 || happyHourAlcoholicPool.length < 3 || virginPool.length < 1 || eveningPool.length < 1) {
+        return null;
+      }
+
+      const selectedVacay = pickRandom(vacayPool);
+      const shuffledRemaining = shuffleArray(
+        remainingHappyPool.filter(([id]) => id !== selectedVacay[0])
+      );
+
+      const happyHourAlcoholic = [selectedVacay[0]];
+
+      for (const [id] of shuffledRemaining) {
+        if (!happyHourAlcoholic.includes(id)) {
+          happyHourAlcoholic.push(id);
+        }
+        if (happyHourAlcoholic.length === 3) break;
+      }
+
+      const happyHourVirgin = pickRandom(virginPool)?.[0] || null;
+      const cocktailOfTheEvening = pickRandom(eveningPool)?.[0] || null;
+
+      if (!happyHourVirgin || !cocktailOfTheEvening || happyHourAlcoholic.length < 3) {
+        return null;
+      }
+
+      return {
+        happyHourAlcoholic,
+        happyHourVirgin,
+        cocktailOfTheEvening
+      };
+    }
+
+    function renderSpecialSelection(selection) {
+      if (!selection) {
+        specialSelectionPreview.innerHTML = `
+          <div class="special-preview-group">
+            <strong>Fehler</strong>
+            <ul><li>Es konnte keine gültige Auswahl erzeugt werden.</li></ul>
+          </div>
+        `;
+        specialExportOutput.textContent = "";
+        return;
+      }
+
+      specialSelectionPreview.innerHTML = `
+        <div class="special-preview-group">
+          <strong>Happy Hour alkoholisch</strong>
+          <ul>
+            ${selection.happyHourAlcoholic.map(id => `<li>${formatRecipeTitleById(id)}</li>`).join("")}
+          </ul>
+        </div>
+
+        <div class="special-preview-group">
+          <strong>Happy Hour virgin</strong>
+          <ul>
+            <li>${formatRecipeTitleById(selection.happyHourVirgin)}</li>
+          </ul>
+        </div>
+
+        <div class="special-preview-group">
+          <strong>Cocktail des Abends</strong>
+          <ul>
+            <li>${formatRecipeTitleById(selection.cocktailOfTheEvening)}</li>
+          </ul>
+        </div>
+      `;
+
+      specialExportOutput.textContent =
+`{
+  happyHourAlcoholic: ["${selection.happyHourAlcoholic.join('", "')}"],
+  happyHourVirgin: "${selection.happyHourVirgin}",
+  cocktailOfTheEvening: "${selection.cocktailOfTheEvening}"
+},`;
+    }
+
+    function openSpecialGenerator() {
+      const selection = generateSpecialSelection();
+      renderSpecialSelection(selection);
+      specialGeneratorOverlay.classList.add("active");
     }
 
     categoryButtons.forEach(button => {
@@ -1377,18 +1922,34 @@
         button.classList.add("active");
         activeCategory = button.dataset.category;
         filterCocktails();
+
+        if (activeCategory === "BATCHES") {
+          renderBatchCalculator();
+        }
       });
     });
 
     cocktailTiles.forEach(tile => {
       tile.addEventListener("click", () => {
         showRecipe(tile.dataset.id);
-        document.getElementById("recipePanel").scrollIntoView({
+        recipePanel.scrollIntoView({
           behavior: "smooth",
           block: "start"
         });
       });
     });
+
+    batchSizeButtons.forEach(button => {
+      button.addEventListener("click", () => {
+        batchSizeButtons.forEach(btn => btn.classList.remove("active"));
+        button.classList.add("active");
+        activeBatchSize = button.dataset.size;
+        renderBatchCalculator();
+      });
+    });
+
+    batchRecipeSelect.addEventListener("change", renderBatchCalculator);
+    batchCustomInput.addEventListener("input", renderBatchCalculator);
 
     searchInput.addEventListener("input", filterCocktails);
 
@@ -1419,7 +1980,55 @@
       });
     }
 
-    showRecipe("whiskey-sour");
+    if (openSpecialGeneratorBtn && specialGeneratorOverlay && closeSpecialGeneratorBtn) {
+      openSpecialGeneratorBtn.addEventListener("click", () => {
+        openSpecialGenerator();
+      });
+
+      closeSpecialGeneratorBtn.addEventListener("click", () => {
+        specialGeneratorOverlay.classList.remove("active");
+      });
+
+      specialGeneratorOverlay.addEventListener("click", (event) => {
+        if (event.target === specialGeneratorOverlay) {
+          specialGeneratorOverlay.classList.remove("active");
+        }
+      });
+    }
+
+    if (generateSpecialsBtn) {
+      generateSpecialsBtn.addEventListener("click", () => {
+        const selection = generateSpecialSelection();
+        renderSpecialSelection(selection);
+      });
+    }
+
+    if (copySpecialsBtn) {
+      copySpecialsBtn.addEventListener("click", async () => {
+        const text = specialExportOutput.textContent.trim();
+        if (!text) return;
+
+        try {
+          await navigator.clipboard.writeText(text);
+          copySpecialsBtn.textContent = "Kopiert!";
+          setTimeout(() => {
+            copySpecialsBtn.textContent = "TXT kopieren";
+          }, 1400);
+        } catch (error) {
+          copySpecialsBtn.textContent = "Fehler";
+          setTimeout(() => {
+            copySpecialsBtn.textContent = "TXT kopieren";
+          }, 1400);
+        }
+      });
+    }
+
+    buildBatchOptions();
+    batchRecipeSelect.value = "whiskey-sour";
+    renderBatchCalculator();
+
+    document.querySelector('.category-btn[data-category="PARTY-FAVORITES"]').classList.add("active");
+    showRecipe("long-island");
     filterCocktails();
   </script>
 </body>
