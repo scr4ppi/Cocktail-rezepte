@@ -1784,29 +1784,72 @@
       return `${formatNumber(scaled)} ${unit}`;
     }
 
-   function renderBatchCalculator() {
-      const id = batchRecipeSelect.value;
-      const liters = getSelectedBatchLiters();
-      const recipe = recipes[id];
-      if (!recipe) return;
+  function renderBatchCalculator() {
+    const id = batchRecipeSelect.value;
+    const targetLiters = getSelectedBatchLiters(); // Das, was der User ausgewählt hat (z.B. 3,0 L)
+    const recipe = recipes[id];
+    if (!recipe) return;
 
-      batchTargetLiters.textContent = formatLiters(liters);
+    batchTargetLiters.textContent = formatLiters(targetLiters);
 
-      if (activeBatchSize === "custom") {
+    if (activeBatchSize === "custom") {
         batchCustomWrap.classList.add("active");
-      } else {
+    } else {
         batchCustomWrap.classList.remove("active");
-      }
+    }
 
-      // Berechnung des Faktors
-      const factor = (liters * 1000) / recipe.batchBaseMl;
+    let concentrationFactor;
+    let waterMl = 0;
+    const targetTotalMl = targetLiters * 1000;
 
-      batchResultHeading.textContent = activeBatchMode === "slush" ? "Slush-Mengen (inkl. Wasser)" : "Batch-Mengen (Konzentrat)";
-      batchOutputMeta.textContent = `Basis: ca. ${formatNumber(recipe.batchBaseMl)} ml · Faktor ${formatNumber(factor)}`;
-      batchPreviewTitle.textContent = recipe.title;
-      batchPreviewSubtitle.textContent = activeBatchMode === "slush" ? "Optimiert für Slush-Maschine" : "Automatische Hochrechnung";
-      batchPreviewImage.src = recipe.image;
+    if (activeBatchMode === "slush") {
+        // LOGIK FÜR SLUSH:
+        // Wir wollen, dass am Ende EXAKT targetTotalMl im Tank sind.
+        // 75% davon ist Cocktail-Mix, 25% ist Wasser.
+        const cocktailPartMl = targetTotalMl * 0.75;
+        waterMl = targetTotalMl * 0.25;
+        
+        // Der Faktor berechnet sich nun nur auf den Cocktail-Anteil
+        concentrationFactor = cocktailPartMl / recipe.batchBaseMl;
+    } else {
+        // LOGIK FÜR STANDARD BATCH:
+        // 100% Cocktail-Konzentrat (Verwässerung passiert erst im Shaker)
+        concentrationFactor = targetTotalMl / recipe.batchBaseMl;
+    }
 
+    batchResultHeading.textContent = activeBatchMode === "slush" ? "Slush-Füllmenge (Exakt)" : "Batch-Mengen (Konzentrat)";
+    batchOutputMeta.textContent = `Basis: ca. ${formatNumber(recipe.batchBaseMl)} ml · Faktor ${formatNumber(concentrationFactor)}`;
+    batchPreviewTitle.textContent = recipe.title;
+
+    // 1. Cocktail-Zutaten berechnen
+    let ingredientsHtml = recipe.ingredients.map(item => {
+        const text = convertIngredientAmount(item.amount, item.unit, concentrationFactor);
+        return `<li><strong>${text}</strong> ${item.name}</li>`;
+    }).join("");
+
+    // 2. Wasser-Anteil hinzufügen (NUR wenn Slush aktiv)
+    if (activeBatchMode === "slush") {
+        const waterText = waterMl >= 1000 ? `${formatNumber(waterMl / 1000)} l` : `${formatNumber(waterMl)} ml`;
+        ingredientsHtml += `<li style="color: #00d4ff; border-top: 2px dashed rgba(0,212,255,0.4); padding-top: 8px; margin-top: 8px;">
+            <strong>${waterText}</strong> Stilles Wasser (RESTMENGE BIS ZIELVOLUMEN)
+        </li>`;
+    }
+
+    batchResultList.innerHTML = ingredientsHtml;
+
+    // Dynamische Hinweise
+    const currentNotes = activeBatchMode === "slush" 
+        ? [
+            `Mische zuerst alle oberen Zutaten, dann fülle mit Wasser auf, bis du genau ${formatLiters(targetLiters)} erreichst.`,
+            "Das Wasser sorgt für die richtige Konsistenz (Dilution) in der Slush-Maschine."
+          ]
+        : [
+            "Dies ist ein Konzentrat. Es enthält noch kein Schmelzwasser.",
+            "Vor der Ausgabe im Shaker oder Rührglas auf Eis zubereiten."
+          ];
+
+    batchNoteList.innerHTML = currentNotes.map(note => `<li>${note}</li>`).join("");
+}
       // 1. Normale Zutaten rendern
       let ingredientsHtml = recipe.ingredients.map(item => {
         const text = convertIngredientAmount(item.amount, item.unit, factor);
