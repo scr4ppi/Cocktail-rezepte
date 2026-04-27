@@ -636,7 +636,7 @@
             Specials zufällig wählen
           </button>
           <button id="generateFourWeeksBtn" class="ingredients-btn" type="button">
-  4 Wochen anzeigen
+  geplante Happy Hour
 </button>
         </div>
       </div>
@@ -1545,7 +1545,7 @@
     const specialGeneratorOverlay = document.getElementById("specialGeneratorOverlay");
     const closeSpecialGeneratorBtn = document.getElementById("closeSpecialGeneratorBtn");
     const generateSpecialsBtn = document.getElementById("generateSpecialsBtn");
-  
+    const generateFourWeeksBtn = document.getElementById("generateFourWeeksBtn");
     const copySpecialsBtn = document.getElementById("copySpecialsBtn");
     const specialSelectionPreview = document.getElementById("specialSelectionPreview");
     const specialExportOutput = document.getElementById("specialExportOutput");
@@ -1847,6 +1847,13 @@
             .map(([id, r]) => `<option value="${id}">${r.title}</option>`).join("");
     }
 
+    if (generateFourWeeksBtn) {
+  generateFourWeeksBtn.onclick = () => {
+    generateFourWeekPreview();
+    specialGeneratorOverlay.classList.add("active");
+  };
+}
+
     // ==========================================
     // 7. EVENT LISTENER & INITIALISIERUNG
     // ==========================================
@@ -1916,7 +1923,8 @@ batchCustomInput.addEventListener("input", renderBatchCalculator);
     buildBatchOptions();
     batchRecipeSelect.value = "whiskey-sour";
     showRecipe("long-island");
-    filterCocktails();
+filterCocktails();
 
+  </script>
 </body>
 </html>
