@@ -1820,19 +1820,65 @@ Cocktail des Abends:
     batchRecipeSelect.addEventListener("change", renderBatchCalculator);
     batchCustomInput.addEventListener("input", renderBatchCalculator);
     
-    // Öffnen/Schließen Logik für Overlays
+// ==========================================
+    // ÖFFNEN/SCHLIEẞEN LOGIK FÜR OVERLAYS
+    // ==========================================
+
+    // Inhaltsliste (Tabelle)
     openIngredientsBtn.onclick = () => {
-        overlayTableBody.innerHTML = Object.values(recipes).map(r => `<tr><td>${r.title}</td><td>${r.ingredients.map(ingredientToText).join("\n")}</td></tr>`).join("");
+        overlayTableBody.innerHTML = Object.values(recipes)
+            .sort((a, b) => a.title.localeCompare(b.title, "de"))
+            .map(r => `<tr><td>${r.title}</td><td>${r.ingredients.map(ingredientToText).join("\n")}</td></tr>`)
+            .join("");
         overlay.classList.add("active");
     };
     closeIngredientsBtn.onclick = () => overlay.classList.remove("active");
+
+    // Special Generator Logik
+    const runSpecialGenerator = () => {
+        const selection = generateSpecialSelection();
+        renderSpecialSelection(selection);
+    };
+
     openSpecialGeneratorBtn.onclick = () => {
-        const s = generateSpecialSelection();
-        specialSelectionPreview.innerHTML = s ? `<strong>HH:</strong> ${s.happyHourAlcoholic.join(", ")}` : "Fehler";
+        runSpecialGenerator(); // Direkt beim Öffnen einmal würfeln
         specialGeneratorOverlay.classList.add("active");
     };
+    
+    // Der "Neu auslosen" Button im Overlay
+    generateSpecialsBtn.onclick = runSpecialGenerator;
+
     closeSpecialGeneratorBtn.onclick = () => specialGeneratorOverlay.classList.remove("active");
 
+    // Copy-Funktion für den TXT Export
+    copySpecialsBtn.onclick = async () => {
+        const text = specialExportOutput.textContent.trim();
+        if (!text) return;
+        try {
+            await navigator.clipboard.writeText(text);
+            const originalText = copySpecialsBtn.textContent;
+            copySpecialsBtn.textContent = "Kopiert!";
+            setTimeout(() => { copySpecialsBtn.textContent = originalText; }, 1500);
+        } catch (err) {
+            console.error("Fehler beim Kopieren", err);
+        }
+    };
+
+    // Overlay Schließen bei Klick auf Hintergrund
+    window.onclick = (event) => {
+        if (event.target === overlay) overlay.classList.remove("active");
+        if (event.target === specialGeneratorOverlay) specialGeneratorOverlay.classList.remove("active");
+    };
+
+    // ==========================================
+    // INITIALISIERUNG BEIM LADEN
+    // ==========================================
+    
+    // Befüllt das Dropdown im Batch-Panel
+    buildBatchOptions();
+    
+    // Setzt Startwerte
+    batchRecipeSelect.value = "whiskey-sour";
     showRecipe("long-island");
     filterCocktails();
     </script>
