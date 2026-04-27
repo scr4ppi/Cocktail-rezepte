@@ -1545,7 +1545,7 @@
     const specialGeneratorOverlay = document.getElementById("specialGeneratorOverlay");
     const closeSpecialGeneratorBtn = document.getElementById("closeSpecialGeneratorBtn");
     const generateSpecialsBtn = document.getElementById("generateSpecialsBtn");
-    const generateFourWeeksBtn = document.getElementById("generateFourWeeksBtn");
+  
     const copySpecialsBtn = document.getElementById("copySpecialsBtn");
     const specialSelectionPreview = document.getElementById("specialSelectionPreview");
     const specialExportOutput = document.getElementById("specialExportOutput");
@@ -1883,14 +1883,7 @@
         };
     }
 
-    const generateFourWeeksBtn = document.getElementById("generateFourWeeksBtn");
 
-if (generateFourWeeksBtn) {
-  generateFourWeeksBtn.onclick = () => {
-    generateFourWeekPreview();
-    specialGeneratorOverlay.classList.add("active");
-  };
-}
 
     // Inhaltsliste Overlay
     if (openIngredientsBtn) {
@@ -1921,12 +1914,5 @@ batchCustomInput.addEventListener("input", renderBatchCalculator);
     showRecipe("long-island");
     filterCocktails();
 
-    if (generateFourWeeksBtn) {
-  generateFourWeeksBtn.onclick = () => {
-    generateFourWeekPreview();
-    specialGeneratorOverlay.classList.add("active");
-  };
-}
-    </script>
 </body>
 </html>
