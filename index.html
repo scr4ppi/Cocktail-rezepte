@@ -1719,83 +1719,68 @@
       });
     });
 
-    // Specials & Sonstiges
-    function pickRandom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
-
-function shuffleArray(array) {
-      const copy = [...array];
-      for (let i = copy.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [copy[i], copy[j]] = [copy[j], copy[i]];
-      }
-      return copy;
-    }
-    
-function generateSpecialSelection() {
-      // 1. Sperrlisten definieren
-      const happyHourBlocked = new Set([
-        "mai-tai", "long-island", "zombie", "mojito", "pornstar-martini",
-        "negroni", "whiskey-sour", "pisco-sour", "paloma", "caipirinha",
-        "boulevardier", "martini", "new-york-sour"
-      ]);
-
-      const eveningBlocked = new Set([
-        "mai-tai", "long-island", "zombie", "mojito"
-      ]);
-
-      // 2. Pools vorbereiten (Nur alkoholische, keine Slush-Only Rezepte)
-      const allAlcoholicEntries = Object.entries(recipes).filter(([id, recipe]) => {
-        return recipe.category !== "Zero Proof" && !recipe.isSlushOnly;
-      });
-
-      // 3. Happy Hour Auswahl (3 Stück)
-      const happyHourPool = allAlcoholicEntries.filter(([id]) => !happyHourBlocked.has(id));
-      
-      if (happyHourPool.length < 3) return null; // Falls zu wenig Auswahl da ist
-
-      const shuffledHH = shuffleArray(happyHourPool);
-      const happyHourAlcoholic = [shuffledHH[0][0], shuffledHH[1][0], shuffledHH[2][0]];
-
-      // 4. Virgin Auswahl (1 Stück)
-      const virginPool = Object.entries(recipes).filter(([, recipe]) => {
-        return recipe.category === "Zero Proof" && !recipe.isSlushOnly;
-      });
-      const happyHourVirgin = pickRandom(virginPool)?.[0] || "ipanema";
-
-      // 5. Cocktail des Abends (1 Stück, fast alles erlaubt außer die ganz großen Brecher)
-      const eveningPool = allAlcoholicEntries.filter(([id]) => !eveningBlocked.has(id));
-      const cocktailOfTheEvening = pickRandom(eveningPool)?.[0] || "touchdown";
-
-      return {
-        happyHourAlcoholic,
-        happyHourVirgin,
-        cocktailOfTheEvening
-      };
+   // ==========================================
+    // 6. SPECIALS & GENERATOR LOGIK
+    // ==========================================
+    function pickRandom(arr) { 
+        return arr && arr.length ? arr[Math.floor(Math.random() * arr.length)] : null; 
     }
 
-    // Hilfsfunktion zum Rendern (ebenfalls ersetzen/korrigieren)
+    function shuffleArray(array) {
+        const copy = [...array];
+        for (let i = copy.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [copy[i], copy[j]] = [copy[j], copy[i]];
+        }
+        return copy;
+    }
+
+    function generateSpecialSelection() {
+        const happyHourBlocked = new Set([
+            "mai-tai", "long-island", "zombie", "mojito", "pornstar-martini",
+            "negroni", "whiskey-sour", "pisco-sour", "paloma", "caipirinha",
+            "boulevardier", "martini", "new-york-sour"
+        ]);
+
+        const eveningBlocked = new Set(["mai-tai", "long-island", "zombie", "mojito"]);
+
+        // Pools filtern
+        const allAlcs = Object.entries(recipes).filter(([id, r]) => r.category !== "Zero Proof" && !r.isSlushOnly);
+        const hhPool = allAlcs.filter(([id]) => !happyHourBlocked.has(id));
+        const virgins = Object.entries(recipes).filter(([id, r]) => r.category === "Zero Proof" && !r.isSlushOnly);
+
+        if (hhPool.length < 3) return null;
+
+        const shuffledHH = shuffleArray(hhPool);
+        
+        return {
+            happyHourAlcoholic: [shuffledHH[0][0], shuffledHH[1][0], shuffledHH[2][0]],
+            happyHourVirgin: pickRandom(virgins)?.[0] || "ipanema",
+            cocktailOfTheEvening: pickRandom(allAlcs.filter(([id]) => !eveningBlocked.has(id)))?.[0] || "touchdown"
+        };
+    }
+
     function renderSpecialSelection(selection) {
-      if (!selection) {
-        specialSelectionPreview.innerHTML = "Fehler: Nicht genug Cocktails für die Auswahl gefunden.";
-        return;
-      }
+        if (!selection) {
+            specialSelectionPreview.innerHTML = "Fehler: Zu wenig Cocktails im Pool.";
+            return;
+        }
 
-      specialSelectionPreview.innerHTML = `
-        <div class="special-preview-group">
-          <strong>Happy Hour (Alkoholisch)</strong>
-          <ul>${selection.happyHourAlcoholic.map(id => `<li>${formatRecipeTitleById(id)}</li>`).join("")}</ul>
-        </div>
-        <div class="special-preview-group">
-          <strong>Happy Hour (Virgin)</strong>
-          <ul><li>${formatRecipeTitleById(selection.happyHourVirgin)}</li></ul>
-        </div>
-        <div class="special-preview-group">
-          <strong>Cocktail des Abends</strong>
-          <ul><li>${formatRecipeTitleById(selection.cocktailOfTheEvening)}</li></ul>
-        </div>
-      `;
+        specialSelectionPreview.innerHTML = `
+            <div class="special-preview-group">
+                <strong>Happy Hour (Alkoholisch)</strong>
+                <ul>${selection.happyHourAlcoholic.map(id => `<li>${formatRecipeTitleById(id)}</li>`).join("")}</ul>
+            </div>
+            <div class="special-preview-group">
+                <strong>Happy Hour (Virgin)</strong>
+                <ul><li>${formatRecipeTitleById(selection.happyHourVirgin)}</li></ul>
+            </div>
+            <div class="special-preview-group">
+                <strong>Cocktail des Abends</strong>
+                <ul><li>${formatRecipeTitleById(selection.cocktailOfTheEvening)}</li></ul>
+            </div>`;
 
-      specialExportOutput.textContent = 
+        specialExportOutput.textContent = 
 `Happy Hour:
 - ${formatRecipeTitleById(selection.happyHourAlcoholic[0])}
 - ${formatRecipeTitleById(selection.happyHourAlcoholic[1])}
@@ -1807,77 +1792,71 @@ Cocktail des Abends:
     }
 
     function buildBatchOptions() {
-      batchRecipeSelect.innerHTML = Object.entries(recipes)
-        .filter(([, r]) => r.batchable || r.category === "CUSTOM")
-        .sort((a,b) => a[1].title.localeCompare(b[1].title))
-        .map(([id, r]) => `<option value="${id}">${r.title}</option>`).join("");
+        batchRecipeSelect.innerHTML = Object.entries(recipes)
+            .filter(([, r]) => r.batchable || r.category === "CUSTOM")
+            .sort((a, b) => a[1].title.localeCompare(b[1].title, "de"))
+            .map(([id, r]) => `<option value="${id}">${r.title}</option>`).join("");
     }
 
-    // Init
-    buildBatchOptions();
-    batchRecipeSelect.value = "whiskey-sour";
-    searchInput.addEventListener("input", filterCocktails);
-    batchRecipeSelect.addEventListener("change", renderBatchCalculator);
-    batchCustomInput.addEventListener("input", renderBatchCalculator);
-    
-// ==========================================
-    // ÖFFNEN/SCHLIEẞEN LOGIK FÜR OVERLAYS
     // ==========================================
-
-    // Inhaltsliste (Tabelle)
-    openIngredientsBtn.onclick = () => {
-        overlayTableBody.innerHTML = Object.values(recipes)
-            .sort((a, b) => a.title.localeCompare(b.title, "de"))
-            .map(r => `<tr><td>${r.title}</td><td>${r.ingredients.map(ingredientToText).join("\n")}</td></tr>`)
-            .join("");
-        overlay.classList.add("active");
-    };
-    closeIngredientsBtn.onclick = () => overlay.classList.remove("active");
-
-    // Special Generator Logik
+    // 7. EVENT LISTENER & INITIALISIERUNG
+    // ==========================================
+    
+    // Die Generator-Aktion
     const runSpecialGenerator = () => {
         const selection = generateSpecialSelection();
         renderSpecialSelection(selection);
     };
 
-    openSpecialGeneratorBtn.onclick = () => {
-        runSpecialGenerator(); // Direkt beim Öffnen einmal würfeln
-        specialGeneratorOverlay.classList.add("active");
-    };
-    
-    // Der "Neu auslosen" Button im Overlay
-    generateSpecialsBtn.onclick = runSpecialGenerator;
+    // Button-Events zuweisen
+    if (openSpecialGeneratorBtn) {
+        openSpecialGeneratorBtn.onclick = () => {
+            runSpecialGenerator();
+            specialGeneratorOverlay.classList.add("active");
+        };
+    }
 
-    closeSpecialGeneratorBtn.onclick = () => specialGeneratorOverlay.classList.remove("active");
+    if (generateSpecialsBtn) {
+        generateSpecialsBtn.onclick = runSpecialGenerator;
+    }
 
-    // Copy-Funktion für den TXT Export
-    copySpecialsBtn.onclick = async () => {
-        const text = specialExportOutput.textContent.trim();
-        if (!text) return;
-        try {
+    if (closeSpecialGeneratorBtn) {
+        closeSpecialGeneratorBtn.onclick = () => specialGeneratorOverlay.classList.remove("active");
+    }
+
+    if (copySpecialsBtn) {
+        copySpecialsBtn.onclick = async () => {
+            const text = specialExportOutput.textContent.trim();
+            if (!text) return;
             await navigator.clipboard.writeText(text);
-            const originalText = copySpecialsBtn.textContent;
             copySpecialsBtn.textContent = "Kopiert!";
-            setTimeout(() => { copySpecialsBtn.textContent = originalText; }, 1500);
-        } catch (err) {
-            console.error("Fehler beim Kopieren", err);
-        }
-    };
+            setTimeout(() => { copySpecialsBtn.textContent = "TXT kopieren"; }, 1500);
+        };
+    }
 
-    // Overlay Schließen bei Klick auf Hintergrund
+    // Inhaltsliste Overlay
+    if (openIngredientsBtn) {
+        openIngredientsBtn.onclick = () => {
+            overlayTableBody.innerHTML = Object.values(recipes)
+                .sort((a, b) => a.title.localeCompare(b.title, "de"))
+                .map(r => `<tr><td>${r.title}</td><td>${r.ingredients.map(ingredientToText).join("\n")}</td></tr>`)
+                .join("");
+            overlay.classList.add("active");
+        };
+    }
+    
+    if (closeIngredientsBtn) {
+        closeIngredientsBtn.onclick = () => overlay.classList.remove("active");
+    }
+
+    // Schließen bei Klick auf Hintergrund
     window.onclick = (event) => {
         if (event.target === overlay) overlay.classList.remove("active");
         if (event.target === specialGeneratorOverlay) specialGeneratorOverlay.classList.remove("active");
     };
 
-    // ==========================================
-    // INITIALISIERUNG BEIM LADEN
-    // ==========================================
-    
-    // Befüllt das Dropdown im Batch-Panel
+    // App starten
     buildBatchOptions();
-    
-    // Setzt Startwerte
     batchRecipeSelect.value = "whiskey-sour";
     showRecipe("long-island");
     filterCocktails();
