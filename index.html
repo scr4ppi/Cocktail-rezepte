@@ -1735,6 +1735,10 @@
         return copy;
     }
 
+    function formatRecipeTitleById(id) {
+  return recipes[id] ? recipes[id].title : id;
+}
+
     function generateSpecialSelection() {
         const happyHourBlocked = new Set([
             "mai-tai", "long-island", "zombie", "mojito", "pornstar-martini",
@@ -1854,7 +1858,9 @@ Cocktail des Abends:
         if (event.target === overlay) overlay.classList.remove("active");
         if (event.target === specialGeneratorOverlay) specialGeneratorOverlay.classList.remove("active");
     };
-
+searchInput.addEventListener("input", filterCocktails);
+batchRecipeSelect.addEventListener("change", renderBatchCalculator);
+batchCustomInput.addEventListener("input", renderBatchCalculator);
     // App starten
     buildBatchOptions();
     batchRecipeSelect.value = "whiskey-sour";
