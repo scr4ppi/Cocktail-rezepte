@@ -1545,6 +1545,7 @@
     const closeSpecialGeneratorBtn = document.getElementById("closeSpecialGeneratorBtn");
     const generateSpecialsBtn = document.getElementById("generateSpecialsBtn");
     const copySpecialsBtn = document.getElementById("copySpecialsBtn");
+    const copySpecialsBtn = document.getElementById("copySpecialsBtn");
     const specialSelectionPreview = document.getElementById("specialSelectionPreview");
     const specialExportOutput = document.getElementById("specialExportOutput");
     const batchRecipeSelect = document.getElementById("batchRecipeSelect");
@@ -1665,16 +1666,8 @@
     </div>
   `).join("");
 
-  specialExportOutput.textContent = "";
-}
 
-    specialExportOutput.textContent =
-`  {
-    happyHourAlcoholic: ["${selection.happyHourAlcoholic[0]}", "${selection.happyHourAlcoholic[1]}", "${selection.happyHourAlcoholic[2]}"],
-    happyHourVirgin: "${selection.happyHourVirgin}",
-    cocktailOfTheEvening: "${selection.cocktailOfTheEvening}"
-  },`;
-
+  
     // UI Funktionen
     function showRecipe(id) {
       const recipe = recipes[id];
@@ -1796,33 +1789,33 @@
         };
     }
 
-    function renderSpecialSelection(selection) {
-        if (!selection) {
-            specialSelectionPreview.innerHTML = "Fehler: Zu wenig Cocktails im Pool.";
-            return;
-        }
+   function renderSpecialSelection(selection) {
+  if (!selection) {
+    specialSelectionPreview.innerHTML = "Fehler: Zu wenig Cocktails im Pool.";
+    return;
+  }
 
-        specialSelectionPreview.innerHTML = `
-            <div class="special-preview-group">
-                <strong>Happy Hour (Alkoholisch)</strong>
-                <ul>${selection.happyHourAlcoholic.map(id => `<li>${formatRecipeTitleById(id)}</li>`).join("")}</ul>
-            </div>
-            <div class="special-preview-group">
-                <strong>Happy Hour (Virgin)</strong>
-                <ul><li>${formatRecipeTitleById(selection.happyHourVirgin)}</li></ul>
-            </div>
-            <div class="special-preview-group">
-                <strong>Cocktail des Abends</strong>
-                <ul><li>${formatRecipeTitleById(selection.cocktailOfTheEvening)}</li></ul>
-            </div>`;
+  specialSelectionPreview.innerHTML = `
+    <div class="special-preview-group">
+      <strong>Happy Hour (Alkoholisch)</strong>
+      <ul>${selection.happyHourAlcoholic.map(id => `<li>${formatRecipeTitleById(id)}</li>`).join("")}</ul>
+    </div>
+    <div class="special-preview-group">
+      <strong>Happy Hour (Virgin)</strong>
+      <ul><li>${formatRecipeTitleById(selection.happyHourVirgin)}</li></ul>
+    </div>
+    <div class="special-preview-group">
+      <strong>Cocktail des Abends</strong>
+      <ul><li>${formatRecipeTitleById(selection.cocktailOfTheEvening)}</li></ul>
+    </div>`;
 
-specialExportOutput.textContent =
+  specialExportOutput.textContent =
 `  {
     happyHourAlcoholic: ["${selection.happyHourAlcoholic[0]}", "${selection.happyHourAlcoholic[1]}", "${selection.happyHourAlcoholic[2]}"],
     happyHourVirgin: "${selection.happyHourVirgin}",
     cocktailOfTheEvening: "${selection.cocktailOfTheEvening}"
   },`;
-
+}
     function buildBatchOptions() {
         batchRecipeSelect.innerHTML = Object.entries(recipes)
             .filter(([, r]) => r.batchable || r.category === "CUSTOM")
