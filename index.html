@@ -635,6 +635,9 @@
           <button id="openSpecialGeneratorBtn" class="ingredients-btn" type="button">
             Specials zufällig wählen
           </button>
+          <button id="generateFourWeeksBtn" class="ingredients-btn" type="button">
+  4 Wochen anzeigen
+</button>
         </div>
       </div>
 
@@ -1643,6 +1646,35 @@
       return parseFloat(activeBatchSize);
     }
 
+    function generateFourWeekPreview() {
+  const weeks = [];
+
+  for (let i = 0; i < 4; i++) {
+    const selection = generateSpecialSelection();
+    if (selection) weeks.push(selection);
+  }
+
+  specialSelectionPreview.innerHTML = weeks.map((selection, index) => `
+    <div class="special-preview-group">
+      <strong>Woche ${index + 1}</strong>
+      <ul>
+        <li>Happy Hour: ${selection.happyHourAlcoholic.map(formatRecipeTitleById).join(", ")}</li>
+        <li>Virgin: ${formatRecipeTitleById(selection.happyHourVirgin)}</li>
+        <li>Cocktail des Abends: ${formatRecipeTitleById(selection.cocktailOfTheEvening)}</li>
+      </ul>
+    </div>
+  `).join("");
+
+  specialExportOutput.textContent = "";
+}
+
+    specialExportOutput.textContent =
+`  {
+    happyHourAlcoholic: ["${selection.happyHourAlcoholic[0]}", "${selection.happyHourAlcoholic[1]}", "${selection.happyHourAlcoholic[2]}"],
+    happyHourVirgin: "${selection.happyHourVirgin}",
+    cocktailOfTheEvening: "${selection.cocktailOfTheEvening}"
+  },`;
+
     // UI Funktionen
     function showRecipe(id) {
       const recipe = recipes[id];
@@ -1784,16 +1816,12 @@
                 <ul><li>${formatRecipeTitleById(selection.cocktailOfTheEvening)}</li></ul>
             </div>`;
 
-        specialExportOutput.textContent = 
-`Happy Hour:
-- ${formatRecipeTitleById(selection.happyHourAlcoholic[0])}
-- ${formatRecipeTitleById(selection.happyHourAlcoholic[1])}
-- ${formatRecipeTitleById(selection.happyHourAlcoholic[2])}
-- ${formatRecipeTitleById(selection.happyHourVirgin)} (Virgin)
-
-Cocktail des Abends:
-- ${formatRecipeTitleById(selection.cocktailOfTheEvening)}`;
-    }
+specialExportOutput.textContent =
+`  {
+    happyHourAlcoholic: ["${selection.happyHourAlcoholic[0]}", "${selection.happyHourAlcoholic[1]}", "${selection.happyHourAlcoholic[2]}"],
+    happyHourVirgin: "${selection.happyHourVirgin}",
+    cocktailOfTheEvening: "${selection.cocktailOfTheEvening}"
+  },`;
 
     function buildBatchOptions() {
         batchRecipeSelect.innerHTML = Object.entries(recipes)
