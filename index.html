@@ -94,6 +94,29 @@
       display: inline-block;
     }
 
+    .batch-mode-btn {
+    flex: 1;
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--text);
+    padding: 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.batch-mode-btn.active {
+    background: #007bff; /* Blau für Standard-Batch */
+    border-color: #007bff;
+}
+.batch-mode-btn[data-mode="slush"].active {
+    background: #00d4ff; /* Hellblau für Slush */
+    border-color: #00d4ff;
+    color: #000;
+}
+
     .header-actions {
       margin-top: 14px;
       text-align: center;
@@ -717,6 +740,12 @@
 
               <div class="batch-controls">
                 <select id="batchRecipeSelect" class="batch-select"></select>
+
+                <div style="margin: 10px 0; display: flex; gap: 10px; align-items: center;">
+                  <span style="font-size: 13px; color: var(--muted); text-transform: uppercase;">Modus:</span>
+                  <button class="batch-mode-btn active" type="button" data-mode="standard">Batch (Vorkühlen)</button>
+                  <button class="batch-mode-btn" type="button" data-mode="slush">Slush (inkl. Wasser)</button>
+              </div>
 
                 <div class="batch-size-row">
                   <button class="batch-size-btn active" type="button" data-size="3">3 L</button>
@@ -1532,7 +1561,20 @@
 
     let activeCategory = "PARTY-FAVORITES";
     let activeBatchSize = "3";
+    let activeBatchMode = "standard"; // NEU: standard oder slush
 
+    // NEU: Selektor für die Modus-Buttons
+    const batchModeButtons = document.querySelectorAll(".batch-mode-btn");
+
+    // NEU: Event Listener für Slush/Batch Umschalter
+    batchModeButtons.forEach(button => {
+      button.addEventListener("click", () => {
+        batchModeButtons.forEach(btn => btn.classList.remove("active"));
+        button.classList.add("active");
+        activeBatchMode = button.dataset.mode;
+        renderBatchCalculator();
+      });
+    });
     function formatNumber(value) {
       if (Number.isInteger(value)) return String(value).replace(".", ",");
       return value
@@ -1742,7 +1784,7 @@
       return `${formatNumber(scaled)} ${unit}`;
     }
 
-    function renderBatchCalculator() {
+   function renderBatchCalculator() {
       const id = batchRecipeSelect.value;
       const liters = getSelectedBatchLiters();
       const recipe = recipes[id];
@@ -1756,25 +1798,42 @@
         batchCustomWrap.classList.remove("active");
       }
 
+      // Berechnung des Faktors
       const factor = (liters * 1000) / recipe.batchBaseMl;
 
-      batchResultHeading.textContent = "Batch-Mengen";
-      batchOutputMeta.textContent = `Basisrezept: ca. ${formatNumber(recipe.batchBaseMl)} ml · Faktor ${formatNumber(factor)}`;
+      batchResultHeading.textContent = activeBatchMode === "slush" ? "Slush-Mengen (inkl. Wasser)" : "Batch-Mengen (Konzentrat)";
+      batchOutputMeta.textContent = `Basis: ca. ${formatNumber(recipe.batchBaseMl)} ml · Faktor ${formatNumber(factor)}`;
       batchPreviewTitle.textContent = recipe.title;
-      batchPreviewSubtitle.textContent = "Automatische Hochrechnung";
+      batchPreviewSubtitle.textContent = activeBatchMode === "slush" ? "Optimiert für Slush-Maschine" : "Automatische Hochrechnung";
       batchPreviewImage.src = recipe.image;
-      batchPreviewImage.alt = recipe.title;
 
-      batchResultList.innerHTML = recipe.ingredients.map(item => {
+      // 1. Normale Zutaten rendern
+      let ingredientsHtml = recipe.ingredients.map(item => {
         const text = convertIngredientAmount(item.amount, item.unit, factor);
         return `<li><strong>${text}</strong> ${item.name}</li>`;
       }).join("");
 
+      // 2. Wasser-Zugabe berechnen (NUR im Slush-Modus)
+      if (activeBatchMode === "slush") {
+        // Wir rechnen 25% des Zielvolumens als Wasser-Dilution dazu
+        const waterMl = (liters * 1000) * 0.25; 
+        const waterText = waterMl >= 1000 ? `${formatNumber(waterMl / 1000)} l` : `${formatNumber(waterMl)} ml`;
+        ingredientsHtml += `<li style="color: #00d4ff; border-top: 1px solid rgba(0,212,255,0.3); padding-top: 8px; margin-top: 8px;">
+          <strong>${waterText}</strong> Stilles Wasser (DILUTION FÜR SLUSH)
+        </li>`;
+      }
+
+      batchResultList.innerHTML = ingredientsHtml;
+
+      // Hinweise basierend auf Modus
+      const slushNotes = activeBatchMode === "slush" 
+        ? ["<strong>Slush-Hinweis:</strong> Das zugefügte Wasser ersetzt das Schmelzwasser. Ohne Wasser würde die Maschine zu fest frieren."] 
+        : ["<strong>Batch-Hinweis:</strong> Konzentrat zum Kühlen. Erst beim Shaken/Rühren mit Eis verwässern."];
+
       batchNoteList.innerHTML = [
-        "Die Berechnung nutzt die hinterlegte ungefähre Basis-Drinkmenge.",
-        "Frische Zutaten, Kohlensäure und Garnish bei Bedarf erst später ergänzen.",
-        "Bei Sprudel, Cola, Soda oder Ginger Beer kann es sinnvoll sein, diese erst beim Servieren oder kurz vor Ausgabe zuzugeben.",
-        "Für Eisverdünnung ggf. etwas Wasser zusätzlich einplanen."
+        ...slushNotes,
+        "Frische Säfte und Sirupe vor dem Einfüllen gut vermischen.",
+        "Kohlensäurehaltige Zutaten erst kurz vor dem Servieren (nicht in die Slush-Maschine!)."
       ].map(note => `<li>${note}</li>`).join("");
     }
 
