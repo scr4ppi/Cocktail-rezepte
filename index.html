@@ -1538,13 +1538,14 @@
     const stepsList = document.getElementById("stepsList");
     const overlay = document.getElementById("ingredientsOverlay");
     const openIngredientsBtn = document.getElementById("openIngredientsBtn");
+    
     const closeIngredientsBtn = document.getElementById("closeIngredientsBtn");
     const overlayTableBody = document.getElementById("overlayTableBody");
     const openSpecialGeneratorBtn = document.getElementById("openSpecialGeneratorBtn");
     const specialGeneratorOverlay = document.getElementById("specialGeneratorOverlay");
     const closeSpecialGeneratorBtn = document.getElementById("closeSpecialGeneratorBtn");
     const generateSpecialsBtn = document.getElementById("generateSpecialsBtn");
-    const copySpecialsBtn = document.getElementById("copySpecialsBtn");
+    const generateFourWeeksBtn = document.getElementById("generateFourWeeksBtn");
     const copySpecialsBtn = document.getElementById("copySpecialsBtn");
     const specialSelectionPreview = document.getElementById("specialSelectionPreview");
     const specialExportOutput = document.getElementById("specialExportOutput");
@@ -1647,7 +1648,7 @@
       return parseFloat(activeBatchSize);
     }
 
-    function generateFourWeekPreview() {
+   function generateFourWeekPreview() {
   const weeks = [];
 
   for (let i = 0; i < 4; i++) {
@@ -1666,6 +1667,8 @@
     </div>
   `).join("");
 
+  specialExportOutput.textContent = "";
+}
 
   
     // UI Funktionen
@@ -1887,6 +1890,13 @@ batchCustomInput.addEventListener("input", renderBatchCalculator);
     batchRecipeSelect.value = "whiskey-sour";
     showRecipe("long-island");
     filterCocktails();
+
+    if (generateFourWeeksBtn) {
+  generateFourWeeksBtn.onclick = () => {
+    generateFourWeekPreview();
+    specialGeneratorOverlay.classList.add("active");
+  };
+}
     </script>
 </body>
 </html>
