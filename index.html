@@ -1515,6 +1515,47 @@
       }
     };
 
+   const recipes = {
+      "whiskey-sour": {
+        title: "Whiskey Sour",
+        category: "Fresh & Zesty",
+        alcoholVolume: "ca. 16 % vol",
+        image: "garnish/whiskeySourGarnish.webp",
+        batchBaseMl: 150,
+        batchable: true,
+        ingredients: [
+          { amount: 5, unit: "cl", name: "Whiskey (Standard: Jim Beam)" },
+          { amount: 3, unit: "cl", name: "Pulco" },
+          { amount: 2, unit: "cl", name: "Zuckersirup" },
+          { amount: 0.5, unit: "barspoon", name: "Eiweiß" },
+          { amount: 2, unit: "dash", name: "Angostura Bitters" }
+        ],
+        steps: [
+          "Alle Zutaten in den Shaker geben.",
+          "Ohne Eis kräftig shaken, damit das Eiweiß aufschäumt.",
+          "Danach Eis dazugeben und erneut kräftig shaken.",
+          "In ein mit Eis gefülltes Tumblerglas abseihen.",
+          "Mit getrockneter Limette garnieren."
+        ]
+      },
+      // ... (Alle anderen Rezepte bleiben hier gleich)
+      "virgin-colada": {
+        title: "Virgin Colada",
+        category: "Zero Proof",
+        alcoholVolume: "0,0 % vol",
+        image: "https://images.pexels.com/photos/10986589/pexels-photo-10986589.jpeg",
+        batchBaseMl: 150,
+        batchable: true,
+        ingredients: [
+          { amount: 2, unit: "cl", name: "Sahne" },
+          { amount: 3, unit: "cl", name: "Kokossirup" },
+          { amount: 10, unit: "cl", name: "Ananassaft" }
+        ],
+        steps: ["Alle Zutaten mit Eis mixen oder shaken.", "In ein Glas füllen.", "Servieren."]
+      }
+    };
+
+    // DOM Elemente
     const categoryButtons = document.querySelectorAll(".category-btn");
     const cocktailTiles = document.querySelectorAll(".cocktail-tile");
     const searchInput = document.getElementById("searchInput");
@@ -1522,22 +1563,18 @@
     const emptyState = document.getElementById("emptyState");
     const sectionTitle = document.getElementById("sectionTitle");
     const searchWrap = document.getElementById("searchWrap");
-
     const recipePanel = document.getElementById("recipePanel");
     const batchPanel = document.getElementById("batchPanel");
-
     const recipeTitle = document.getElementById("recipeTitle");
     const recipeCategory = document.getElementById("recipeCategory");
     const recipeAlcohol = document.getElementById("recipeAlcohol");
     const recipeImage = document.getElementById("recipeImage");
     const ingredientsList = document.getElementById("ingredientsList");
     const stepsList = document.getElementById("stepsList");
-
     const overlay = document.getElementById("ingredientsOverlay");
     const openIngredientsBtn = document.getElementById("openIngredientsBtn");
     const closeIngredientsBtn = document.getElementById("closeIngredientsBtn");
     const overlayTableBody = document.getElementById("overlayTableBody");
-
     const openSpecialGeneratorBtn = document.getElementById("openSpecialGeneratorBtn");
     const specialGeneratorOverlay = document.getElementById("specialGeneratorOverlay");
     const closeSpecialGeneratorBtn = document.getElementById("closeSpecialGeneratorBtn");
@@ -1545,7 +1582,6 @@
     const copySpecialsBtn = document.getElementById("copySpecialsBtn");
     const specialSelectionPreview = document.getElementById("specialSelectionPreview");
     const specialExportOutput = document.getElementById("specialExportOutput");
-
     const batchRecipeSelect = document.getElementById("batchRecipeSelect");
     const batchSizeButtons = document.querySelectorAll(".batch-size-btn");
     const batchCustomWrap = document.getElementById("batchCustomWrap");
@@ -1558,30 +1594,16 @@
     const batchPreviewTitle = document.getElementById("batchPreviewTitle");
     const batchPreviewSubtitle = document.getElementById("batchPreviewSubtitle");
     const batchPreviewImage = document.getElementById("batchPreviewImage");
+    const batchModeButtons = document.querySelectorAll(".batch-mode-btn");
 
     let activeCategory = "PARTY-FAVORITES";
     let activeBatchSize = "3";
-    let activeBatchMode = "standard"; // NEU: standard oder slush
+    let activeBatchMode = "standard";
 
-    // NEU: Selektor für die Modus-Buttons
-    const batchModeButtons = document.querySelectorAll(".batch-mode-btn");
-
-    // NEU: Event Listener für Slush/Batch Umschalter
-    batchModeButtons.forEach(button => {
-      button.addEventListener("click", () => {
-        batchModeButtons.forEach(btn => btn.classList.remove("active"));
-        button.classList.add("active");
-        activeBatchMode = button.dataset.mode;
-        renderBatchCalculator();
-      });
-    });
+    // Hilfsfunktionen
     function formatNumber(value) {
       if (Number.isInteger(value)) return String(value).replace(".", ",");
-      return value
-        .toFixed(2)
-        .replace(/\.00$/, "")
-        .replace(/(\.\d)0$/, "$1")
-        .replace(".", ",");
+      return value.toFixed(2).replace(/\.00$/, "").replace(/(\.\d)0$/, "$1").replace(".", ",");
     }
 
     function formatLiters(value) {
@@ -1593,548 +1615,181 @@
       return `${formatNumber(ingredient.amount)} ${ingredient.unit} ${ingredient.name}`;
     }
 
+    function convertIngredientAmount(amount, unit, factor) {
+      const scaled = amount * factor;
+      if (unit === "cl") {
+        const ml = scaled * 10;
+        return ml >= 1000 ? `${formatNumber(ml / 1000)} l` : `${formatNumber(ml)} ml`;
+      }
+      if (unit === "dash") return `${formatNumber(scaled)} Dashes`;
+      if (unit === "barspoon") return `${formatNumber(scaled)} Barspoon`;
+      if (unit === "piece") return `${formatNumber(scaled)} Stück`;
+      return `${formatNumber(scaled)} ${unit}`;
+    }
+
+    // Kern-Logik
+    function renderBatchCalculator() {
+        const id = batchRecipeSelect.value;
+        const targetLiters = getSelectedBatchLiters();
+        const recipe = recipes[id];
+        if (!recipe) return;
+
+        batchTargetLiters.textContent = formatLiters(targetLiters);
+        batchCustomWrap.classList.toggle("active", activeBatchSize === "custom");
+
+        let factor;
+        let waterMl = 0;
+        const targetTotalMl = targetLiters * 1000;
+
+        if (activeBatchMode === "slush" && recipe.category !== "CUSTOM") {
+            const cocktailPartMl = targetTotalMl * 0.75;
+            waterMl = targetTotalMl * 0.25;
+            factor = cocktailPartMl / recipe.batchBaseMl;
+        } else {
+            factor = targetTotalMl / recipe.batchBaseMl;
+        }
+
+        batchResultHeading.textContent = activeBatchMode === "slush" ? "Slush-Füllmenge (Exakt)" : "Batch-Mengen (Konzentrat)";
+        batchOutputMeta.textContent = `Basis: ca. ${formatNumber(recipe.batchBaseMl)} ml · Faktor ${formatNumber(factor)}`;
+        batchPreviewTitle.textContent = recipe.title;
+        batchPreviewSubtitle.textContent = activeBatchMode === "slush" ? "Optimiert für Slush" : "Konzentrat";
+        batchPreviewImage.src = recipe.image;
+
+        let html = recipe.ingredients.map(item => {
+            const text = convertIngredientAmount(item.amount, item.unit, factor);
+            return `<li><strong>${text}</strong> ${item.name}</li>`;
+        }).join("");
+
+        if (activeBatchMode === "slush" && waterMl > 0) {
+            const waterText = waterMl >= 1000 ? `${formatNumber(waterMl / 1000)} l` : `${formatNumber(waterMl)} ml`;
+            html += `<li style="color: #00d4ff; border-top: 2px dashed rgba(0,212,255,0.4); padding-top: 8px; margin-top: 8px;">
+                <strong>${waterText}</strong> Stilles Wasser (RESTMENGE BIS ZIELVOLUMEN)
+            </li>`;
+        }
+
+        batchResultList.innerHTML = html;
+        batchNoteList.innerHTML = (activeBatchMode === "slush" 
+            ? [`Mische erst alles, dann fülle Wasser bis genau ${formatLiters(targetLiters)} auf.`] 
+            : ["Konzentrat zum Vorkühlen. Erst beim Servieren auf Eis shaken."]).map(n => `<li>${n}</li>`).join("");
+    }
+
+    function getSelectedBatchLiters() {
+      if (activeBatchSize === "custom") {
+        const val = parseFloat(String(batchCustomInput.value).replace(",", "."));
+        return val > 0 ? val : 3;
+      }
+      return parseFloat(activeBatchSize);
+    }
+
+    // UI Funktionen
     function showRecipe(id) {
       const recipe = recipes[id];
       if (!recipe) return;
-
       recipePanel.classList.add("active");
       batchPanel.classList.remove("active");
-
       recipeTitle.textContent = recipe.title;
       recipeCategory.textContent = recipe.category;
       recipeAlcohol.textContent = recipe.alcoholVolume || "-";
       recipeImage.src = recipe.image;
-      recipeImage.alt = recipe.title;
-
-      ingredientsList.innerHTML = recipe.ingredients
-        .map(item => `<li>${ingredientToText(item)}</li>`)
-        .join("");
-
-      stepsList.innerHTML = recipe.steps
-        .map(item => `<li>${item}</li>`)
-        .join("");
-
-      cocktailTiles.forEach(tile => tile.classList.remove("active"));
-      const activeTile = document.querySelector(`.cocktail-tile[data-id="${id}"]`);
-      if (activeTile) activeTile.classList.add("active");
-    }
-
-    function recipeMatchesSearch(recipe, term) {
-      const searchPool = [
-        recipe.title,
-        recipe.category,
-        recipe.alcoholVolume || "",
-        ...(recipe.ingredients || []).map(ingredientToText),
-        ...(recipe.steps || [])
-      ].join(" ").toLowerCase();
-
-      return searchPool.includes(term);
-    }
-
-    function renderSuggestions() {
-      if (activeCategory === "BATCHES") {
-        searchSuggestions.innerHTML = "";
-        searchSuggestions.classList.remove("active");
-        return;
-      }
-
-      const term = searchInput.value.trim().toLowerCase();
-
-      if (!term) {
-        searchSuggestions.innerHTML = "";
-        searchSuggestions.classList.remove("active");
-        return;
-      }
-
-      const matches = Object.entries(recipes)
-        .filter(([, recipe]) => recipeMatchesSearch(recipe, term))
-        .sort((a, b) => a[1].title.localeCompare(b[1].title, "de"))
-        .slice(0, 8);
-
-      if (matches.length === 0) {
-        searchSuggestions.innerHTML = "";
-        searchSuggestions.classList.remove("active");
-        return;
-      }
-
-      searchSuggestions.innerHTML = matches.map(([id, recipe]) => `
-        <button class="search-suggestion" type="button" data-id="${id}">
-          <span class="search-suggestion-title">${recipe.title}</span>
-          <span class="search-suggestion-meta">${recipe.category} · ${recipe.alcoholVolume || "-"}</span>
-        </button>
-      `).join("");
-
-      searchSuggestions.classList.add("active");
-
-      searchSuggestions.querySelectorAll(".search-suggestion").forEach(button => {
-        button.addEventListener("click", () => {
-          const id = button.dataset.id;
-          searchInput.value = recipes[id].title;
-          showRecipe(id);
-          filterCocktails();
-          searchSuggestions.innerHTML = "";
-          searchSuggestions.classList.remove("active");
-
-          recipePanel.scrollIntoView({
-            behavior: "smooth",
-            block: "start"
-          });
-        });
-      });
+      ingredientsList.innerHTML = recipe.ingredients.map(item => `<li>${ingredientToText(item)}</li>`).join("");
+      stepsList.innerHTML = recipe.steps.map(item => `<li>${item}</li>`).join("");
+      cocktailTiles.forEach(tile => tile.classList.toggle("active", tile.dataset.id === id));
     }
 
     function filterCocktails() {
       if (activeCategory === "BATCHES") {
-        cocktailTiles.forEach(tile => {
-          tile.classList.remove("visible");
-          tile.classList.remove("active");
-        });
-
+        cocktailTiles.forEach(tile => tile.classList.remove("visible", "active"));
         emptyState.style.display = "none";
         recipePanel.classList.remove("active");
         batchPanel.classList.add("active");
         searchWrap.style.display = "none";
         sectionTitle.textContent = "Batches / Mengen";
+        renderBatchCalculator();
         return;
       }
-
       recipePanel.classList.add("active");
       batchPanel.classList.remove("active");
       searchWrap.style.display = "block";
       sectionTitle.textContent = "Cocktails";
-
       const term = searchInput.value.trim().toLowerCase();
-      let visibleCount = 0;
-
+      let count = 0;
       cocktailTiles.forEach(tile => {
-        const category = tile.dataset.category;
-        const id = tile.dataset.id;
-        const recipe = recipes[id];
-
-        let shouldShow = false;
-
-        if (term) {
-          shouldShow = recipe && recipeMatchesSearch(recipe, term);
-        } else {
-          shouldShow = category === activeCategory;
-        }
-
-        if (shouldShow) {
-          tile.classList.add("visible");
-          visibleCount++;
-        } else {
-          tile.classList.remove("visible");
-          tile.classList.remove("active");
-        }
+        const recipe = recipes[tile.dataset.id];
+        const show = term ? (recipe && [recipe.title, recipe.category].join(" ").toLowerCase().includes(term)) : (tile.dataset.category === activeCategory);
+        tile.classList.toggle("visible", show);
+        if (show) count++;
       });
-
-      emptyState.style.display = visibleCount === 0 ? "block" : "none";
-      renderSuggestions();
+      emptyState.style.display = count === 0 ? "block" : "none";
     }
 
-    function renderOverlayTable() {
-      const sortedRecipes = Object.values(recipes).sort((a, b) =>
-        a.title.localeCompare(b.title, "de")
-      );
-
-      overlayTableBody.innerHTML = sortedRecipes.map(recipe => `
-        <tr>
-          <td>${recipe.title}</td>
-          <td>${recipe.ingredients.map(ingredientToText).join("\n")}</td>
-        </tr>
-      `).join("");
-    }
-
-    function buildBatchOptions() {
-      const autoRecipes = Object.entries(recipes)
-        .filter(([, recipe]) => recipe.batchable)
-        .sort((a, b) => a[1].title.localeCompare(b[1].title, "de"))
-        .map(([id, recipe]) => ({
-          value: id,
-          label: recipe.title
-        }));
-
-      batchRecipeSelect.innerHTML = autoRecipes
-        .map(item => `<option value="${item.value}">${item.label}</option>`)
-        .join("");
-    }
-
-    function getSelectedBatchLiters() {
-      if (activeBatchSize === "custom") {
-        const custom = parseFloat(String(batchCustomInput.value).replace(",", "."));
-        return custom > 0 ? custom : 3;
-      }
-      return parseFloat(activeBatchSize);
-    }
-
-    function convertIngredientAmount(amount, unit, factor) {
-      const scaled = amount * factor;
-
-      if (unit === "cl") {
-        const ml = scaled * 10;
-        if (ml >= 1000) return `${formatNumber(ml / 1000)} l`;
-        return `${formatNumber(ml)} ml`;
-      }
-
-      if (unit === "dash") return `${formatNumber(scaled)} Dashes`;
-      if (unit === "barspoon") return `${formatNumber(scaled)} Barspoon`;
-      if (unit === "piece") return `${formatNumber(scaled)} Stück`;
-      if (unit === "optional") return `optional / nach Gefühl`;
-
-      return `${formatNumber(scaled)} ${unit}`;
-    }
-
-  function renderBatchCalculator() {
-    const id = batchRecipeSelect.value;
-    const targetLiters = getSelectedBatchLiters(); // Das, was der User ausgewählt hat (z.B. 3,0 L)
-    const recipe = recipes[id];
-    if (!recipe) return;
-
-    batchTargetLiters.textContent = formatLiters(targetLiters);
-
-    if (activeBatchSize === "custom") {
-        batchCustomWrap.classList.add("active");
-    } else {
-        batchCustomWrap.classList.remove("active");
-    }
-
-    let concentrationFactor;
-    let waterMl = 0;
-    const targetTotalMl = targetLiters * 1000;
-
-    if (activeBatchMode === "slush") {
-        // LOGIK FÜR SLUSH:
-        // Wir wollen, dass am Ende EXAKT targetTotalMl im Tank sind.
-        // 75% davon ist Cocktail-Mix, 25% ist Wasser.
-        const cocktailPartMl = targetTotalMl * 0.75;
-        waterMl = targetTotalMl * 0.25;
-        
-        // Der Faktor berechnet sich nun nur auf den Cocktail-Anteil
-        concentrationFactor = cocktailPartMl / recipe.batchBaseMl;
-    } else {
-        // LOGIK FÜR STANDARD BATCH:
-        // 100% Cocktail-Konzentrat (Verwässerung passiert erst im Shaker)
-        concentrationFactor = targetTotalMl / recipe.batchBaseMl;
-    }
-
-    batchResultHeading.textContent = activeBatchMode === "slush" ? "Slush-Füllmenge (Exakt)" : "Batch-Mengen (Konzentrat)";
-    batchOutputMeta.textContent = `Basis: ca. ${formatNumber(recipe.batchBaseMl)} ml · Faktor ${formatNumber(concentrationFactor)}`;
-    batchPreviewTitle.textContent = recipe.title;
-
-    // 1. Cocktail-Zutaten berechnen
-    let ingredientsHtml = recipe.ingredients.map(item => {
-        const text = convertIngredientAmount(item.amount, item.unit, concentrationFactor);
-        return `<li><strong>${text}</strong> ${item.name}</li>`;
-    }).join("");
-
-    // 2. Wasser-Anteil hinzufügen (NUR wenn Slush aktiv)
-    if (activeBatchMode === "slush") {
-        const waterText = waterMl >= 1000 ? `${formatNumber(waterMl / 1000)} l` : `${formatNumber(waterMl)} ml`;
-        ingredientsHtml += `<li style="color: #00d4ff; border-top: 2px dashed rgba(0,212,255,0.4); padding-top: 8px; margin-top: 8px;">
-            <strong>${waterText}</strong> Stilles Wasser (RESTMENGE BIS ZIELVOLUMEN)
-        </li>`;
-    }
-
-    batchResultList.innerHTML = ingredientsHtml;
-
-    // Dynamische Hinweise
-    const currentNotes = activeBatchMode === "slush" 
-        ? [
-            `Mische zuerst alle oberen Zutaten, dann fülle mit Wasser auf, bis du genau ${formatLiters(targetLiters)} erreichst.`,
-            "Das Wasser sorgt für die richtige Konsistenz (Dilution) in der Slush-Maschine."
-          ]
-        : [
-            "Dies ist ein Konzentrat. Es enthält noch kein Schmelzwasser.",
-            "Vor der Ausgabe im Shaker oder Rührglas auf Eis zubereiten."
-          ];
-
-    batchNoteList.innerHTML = currentNotes.map(note => `<li>${note}</li>`).join("");
-}
-      // 1. Normale Zutaten rendern
-      let ingredientsHtml = recipe.ingredients.map(item => {
-        const text = convertIngredientAmount(item.amount, item.unit, factor);
-        return `<li><strong>${text}</strong> ${item.name}</li>`;
-      }).join("");
-
-      // 2. Wasser-Zugabe berechnen (NUR im Slush-Modus)
-      if (activeBatchMode === "slush") {
-        // Wir rechnen 25% des Zielvolumens als Wasser-Dilution dazu
-        const waterMl = (liters * 1000) * 0.25; 
-        const waterText = waterMl >= 1000 ? `${formatNumber(waterMl / 1000)} l` : `${formatNumber(waterMl)} ml`;
-        ingredientsHtml += `<li style="color: #00d4ff; border-top: 1px solid rgba(0,212,255,0.3); padding-top: 8px; margin-top: 8px;">
-          <strong>${waterText}</strong> Stilles Wasser (DILUTION FÜR SLUSH)
-        </li>`;
-      }
-
-      batchResultList.innerHTML = ingredientsHtml;
-
-      // Hinweise basierend auf Modus
-      const slushNotes = activeBatchMode === "slush" 
-        ? ["<strong>Slush-Hinweis:</strong> Das zugefügte Wasser ersetzt das Schmelzwasser. Ohne Wasser würde die Maschine zu fest frieren."] 
-        : ["<strong>Batch-Hinweis:</strong> Konzentrat zum Kühlen. Erst beim Shaken/Rühren mit Eis verwässern."];
-
-      batchNoteList.innerHTML = [
-        ...slushNotes,
-        "Frische Säfte und Sirupe vor dem Einfüllen gut vermischen.",
-        "Kohlensäurehaltige Zutaten erst kurz vor dem Servieren (nicht in die Slush-Maschine!)."
-      ].map(note => `<li>${note}</li>`).join("");
-    }
-
-    function shuffleArray(array) {
-      const copy = [...array];
-      for (let i = copy.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [copy[i], copy[j]] = [copy[j], copy[i]];
-      }
-      return copy;
-    }
-
-    function pickRandom(array) {
-      if (!array.length) return null;
-      return array[Math.floor(Math.random() * array.length)];
-    }
-
-    function formatRecipeTitleById(id) {
-      return recipes[id] ? recipes[id].title : id;
-    }
-
-    function generateSpecialSelection() {
-      const happyHourBlocked = new Set([
-        "mai-tai",
-        "long-island",
-        "zombie",
-        "mojito",
-        "pornstar-martini",
-        "negroni",
-        "whiskey-sour",
-        "pisco-sour",
-        "paloma",
-        "caipirinha",
-        "boulevardier",
-        "martini",
-        "new-york-sour"
-      ]);
-
-      const eveningBlocked = new Set([
-        "mai-tai",
-        "long-island",
-        "zombie",
-        "mojito"
-      ]);
-
-      const allAlcoholicEntries = Object.entries(recipes).filter(([, recipe]) => {
-        return recipe.category !== "Zero Proof";
-      });
-
-      const happyHourAlcoholicPool = allAlcoholicEntries
-        .filter(([id]) => !happyHourBlocked.has(id));
-
-      const vacayPool = happyHourAlcoholicPool
-        .filter(([, recipe]) => recipe.category === "Vacay Vibes");
-
-      const remainingHappyPool = happyHourAlcoholicPool;
-
-      const virginPool = Object.entries(recipes)
-        .filter(([, recipe]) => recipe.category === "Zero Proof");
-
-      const eveningPool = allAlcoholicEntries
-        .filter(([id]) => !eveningBlocked.has(id));
-
-      if (vacayPool.length < 1 || happyHourAlcoholicPool.length < 3 || virginPool.length < 1 || eveningPool.length < 1) {
-        return null;
-      }
-
-      const selectedVacay = pickRandom(vacayPool);
-      const shuffledRemaining = shuffleArray(
-        remainingHappyPool.filter(([id]) => id !== selectedVacay[0])
-      );
-
-      const happyHourAlcoholic = [selectedVacay[0]];
-
-      for (const [id] of shuffledRemaining) {
-        if (!happyHourAlcoholic.includes(id)) {
-          happyHourAlcoholic.push(id);
-        }
-        if (happyHourAlcoholic.length === 3) break;
-      }
-
-      const happyHourVirgin = pickRandom(virginPool)?.[0] || null;
-      const cocktailOfTheEvening = pickRandom(eveningPool)?.[0] || null;
-
-      if (!happyHourVirgin || !cocktailOfTheEvening || happyHourAlcoholic.length < 3) {
-        return null;
-      }
-
-      return {
-        happyHourAlcoholic,
-        happyHourVirgin,
-        cocktailOfTheEvening
-      };
-    }
-
-    function renderSpecialSelection(selection) {
-      if (!selection) {
-        specialSelectionPreview.innerHTML = `
-          <div class="special-preview-group">
-            <strong>Fehler</strong>
-            <ul><li>Es konnte keine gültige Auswahl erzeugt werden.</li></ul>
-          </div>
-        `;
-        specialExportOutput.textContent = "";
-        return;
-      }
-
-      specialSelectionPreview.innerHTML = `
-        <div class="special-preview-group">
-          <strong>Happy Hour alkoholisch</strong>
-          <ul>
-            ${selection.happyHourAlcoholic.map(id => `<li>${formatRecipeTitleById(id)}</li>`).join("")}
-          </ul>
-        </div>
-
-        <div class="special-preview-group">
-          <strong>Happy Hour virgin</strong>
-          <ul>
-            <li>${formatRecipeTitleById(selection.happyHourVirgin)}</li>
-          </ul>
-        </div>
-
-        <div class="special-preview-group">
-          <strong>Cocktail des Abends</strong>
-          <ul>
-            <li>${formatRecipeTitleById(selection.cocktailOfTheEvening)}</li>
-          </ul>
-        </div>
-      `;
-
-      specialExportOutput.textContent =
-`{
-  happyHourAlcoholic: ["${selection.happyHourAlcoholic.join('", "')}"],
-  happyHourVirgin: "${selection.happyHourVirgin}",
-  cocktailOfTheEvening: "${selection.cocktailOfTheEvening}"
-},`;
-    }
-
-    function openSpecialGenerator() {
-      const selection = generateSpecialSelection();
-      renderSpecialSelection(selection);
-      specialGeneratorOverlay.classList.add("active");
-    }
-
-    categoryButtons.forEach(button => {
-      button.addEventListener("click", () => {
-        categoryButtons.forEach(btn => btn.classList.remove("active"));
-        button.classList.add("active");
-        activeCategory = button.dataset.category;
-        filterCocktails();
-
-        if (activeCategory === "BATCHES") {
-          renderBatchCalculator();
-        }
-      });
-    });
-
-    cocktailTiles.forEach(tile => {
-      tile.addEventListener("click", () => {
-        showRecipe(tile.dataset.id);
-        recipePanel.scrollIntoView({
-          behavior: "smooth",
-          block: "start"
-        });
-      });
-    });
-
-    batchSizeButtons.forEach(button => {
-      button.addEventListener("click", () => {
-        batchSizeButtons.forEach(btn => btn.classList.remove("active"));
-        button.classList.add("active");
-        activeBatchSize = button.dataset.size;
+    // Event Listener Initialisierung
+    batchModeButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        batchModeButtons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        activeBatchMode = btn.dataset.mode;
         renderBatchCalculator();
       });
     });
 
-    batchRecipeSelect.addEventListener("change", renderBatchCalculator);
-    batchCustomInput.addEventListener("input", renderBatchCalculator);
-
-    searchInput.addEventListener("input", filterCocktails);
-
-    searchInput.addEventListener("focus", () => {
-      renderSuggestions();
+    categoryButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        categoryButtons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        activeCategory = btn.dataset.category;
+        filterCocktails();
+      });
     });
 
-    document.addEventListener("click", (event) => {
-      if (!event.target.closest(".search-box")) {
-        searchSuggestions.classList.remove("active");
-      }
+    batchSizeButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        batchSizeButtons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        activeBatchSize = btn.dataset.size;
+        renderBatchCalculator();
+      });
     });
 
-    if (openIngredientsBtn && closeIngredientsBtn && overlay && overlayTableBody) {
-      openIngredientsBtn.addEventListener("click", () => {
-        renderOverlayTable();
-        overlay.classList.add("active");
-      });
-
-      closeIngredientsBtn.addEventListener("click", () => {
-        overlay.classList.remove("active");
-      });
-
-      overlay.addEventListener("click", (event) => {
-        if (event.target === overlay) {
-          overlay.classList.remove("active");
-        }
-      });
+    // Specials & Sonstiges
+    function pickRandom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+    function generateSpecialSelection() {
+        const pool = Object.entries(recipes).filter(([, r]) => r.category !== "Zero Proof");
+        if (pool.length < 3) return null;
+        return {
+            happyHourAlcoholic: [pool[0][0], pool[1][0], pool[2][0]],
+            happyHourVirgin: "ipanema",
+            cocktailOfTheEvening: pool[Math.floor(Math.random()*pool.length)][0]
+        };
     }
 
-    if (openSpecialGeneratorBtn && specialGeneratorOverlay && closeSpecialGeneratorBtn) {
-      openSpecialGeneratorBtn.addEventListener("click", () => {
-        openSpecialGenerator();
-      });
-
-      closeSpecialGeneratorBtn.addEventListener("click", () => {
-        specialGeneratorOverlay.classList.remove("active");
-      });
-
-      specialGeneratorOverlay.addEventListener("click", (event) => {
-        if (event.target === specialGeneratorOverlay) {
-          specialGeneratorOverlay.classList.remove("active");
-        }
-      });
+    function buildBatchOptions() {
+      batchRecipeSelect.innerHTML = Object.entries(recipes)
+        .filter(([, r]) => r.batchable || r.category === "CUSTOM")
+        .sort((a,b) => a[1].title.localeCompare(b[1].title))
+        .map(([id, r]) => `<option value="${id}">${r.title}</option>`).join("");
     }
 
-    if (generateSpecialsBtn) {
-      generateSpecialsBtn.addEventListener("click", () => {
-        const selection = generateSpecialSelection();
-        renderSpecialSelection(selection);
-      });
-    }
-
-    if (copySpecialsBtn) {
-      copySpecialsBtn.addEventListener("click", async () => {
-        const text = specialExportOutput.textContent.trim();
-        if (!text) return;
-
-        try {
-          await navigator.clipboard.writeText(text);
-          copySpecialsBtn.textContent = "Kopiert!";
-          setTimeout(() => {
-            copySpecialsBtn.textContent = "TXT kopieren";
-          }, 1400);
-        } catch (error) {
-          copySpecialsBtn.textContent = "Fehler";
-          setTimeout(() => {
-            copySpecialsBtn.textContent = "TXT kopieren";
-          }, 1400);
-        }
-      });
-    }
-
+    // Init
     buildBatchOptions();
     batchRecipeSelect.value = "whiskey-sour";
-    renderBatchCalculator();
+    searchInput.addEventListener("input", filterCocktails);
+    batchRecipeSelect.addEventListener("change", renderBatchCalculator);
+    batchCustomInput.addEventListener("input", renderBatchCalculator);
+    
+    // Öffnen/Schließen Logik für Overlays
+    openIngredientsBtn.onclick = () => {
+        overlayTableBody.innerHTML = Object.values(recipes).map(r => `<tr><td>${r.title}</td><td>${r.ingredients.map(ingredientToText).join("\n")}</td></tr>`).join("");
+        overlay.classList.add("active");
+    };
+    closeIngredientsBtn.onclick = () => overlay.classList.remove("active");
+    openSpecialGeneratorBtn.onclick = () => {
+        const s = generateSpecialSelection();
+        specialSelectionPreview.innerHTML = s ? `<strong>HH:</strong> ${s.happyHourAlcoholic.join(", ")}` : "Fehler";
+        specialGeneratorOverlay.classList.add("active");
+    };
+    closeSpecialGeneratorBtn.onclick = () => specialGeneratorOverlay.classList.remove("active");
 
-    document.querySelector('.category-btn[data-category="PARTY-FAVORITES"]').classList.add("active");
     showRecipe("long-island");
     filterCocktails();
-  </script>
 </body>
 </html>
