@@ -1703,6 +1703,13 @@
       });
     });
 
+    cocktailTiles.forEach(tile => {
+  tile.addEventListener("click", () => {
+    const id = tile.dataset.id;
+    showRecipe(id);
+  });
+});
+
     batchSizeButtons.forEach(btn => {
       btn.addEventListener("click", () => {
         batchSizeButtons.forEach(b => b.classList.remove("active"));
