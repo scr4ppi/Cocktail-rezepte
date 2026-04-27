@@ -1515,45 +1515,7 @@
       }
     };
 
-   const recipes = {
-      "whiskey-sour": {
-        title: "Whiskey Sour",
-        category: "Fresh & Zesty",
-        alcoholVolume: "ca. 16 % vol",
-        image: "garnish/whiskeySourGarnish.webp",
-        batchBaseMl: 150,
-        batchable: true,
-        ingredients: [
-          { amount: 5, unit: "cl", name: "Whiskey (Standard: Jim Beam)" },
-          { amount: 3, unit: "cl", name: "Pulco" },
-          { amount: 2, unit: "cl", name: "Zuckersirup" },
-          { amount: 0.5, unit: "barspoon", name: "Eiweiß" },
-          { amount: 2, unit: "dash", name: "Angostura Bitters" }
-        ],
-        steps: [
-          "Alle Zutaten in den Shaker geben.",
-          "Ohne Eis kräftig shaken, damit das Eiweiß aufschäumt.",
-          "Danach Eis dazugeben und erneut kräftig shaken.",
-          "In ein mit Eis gefülltes Tumblerglas abseihen.",
-          "Mit getrockneter Limette garnieren."
-        ]
-      },
-      // ... (Alle anderen Rezepte bleiben hier gleich)
-      "virgin-colada": {
-        title: "Virgin Colada",
-        category: "Zero Proof",
-        alcoholVolume: "0,0 % vol",
-        image: "https://images.pexels.com/photos/10986589/pexels-photo-10986589.jpeg",
-        batchBaseMl: 150,
-        batchable: true,
-        ingredients: [
-          { amount: 2, unit: "cl", name: "Sahne" },
-          { amount: 3, unit: "cl", name: "Kokossirup" },
-          { amount: 10, unit: "cl", name: "Ananassaft" }
-        ],
-        steps: ["Alle Zutaten mit Eis mixen oder shaken.", "In ein Glas füllen.", "Servieren."]
-      }
-    };
+
 
     // DOM Elemente
     const categoryButtons = document.querySelectorAll(".category-btn");
@@ -1791,5 +1753,6 @@
 
     showRecipe("long-island");
     filterCocktails();
+    </script>
 </body>
 </html>
