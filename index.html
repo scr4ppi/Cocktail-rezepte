@@ -1721,14 +1721,79 @@
 
     // Specials & Sonstiges
     function pickRandom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
-    function generateSpecialSelection() {
-        const pool = Object.entries(recipes).filter(([, r]) => r.category !== "Zero Proof");
-        if (pool.length < 3) return null;
-        return {
-            happyHourAlcoholic: [pool[0][0], pool[1][0], pool[2][0]],
-            happyHourVirgin: "ipanema",
-            cocktailOfTheEvening: pool[Math.floor(Math.random()*pool.length)][0]
-        };
+function generateSpecialSelection() {
+      // 1. Sperrlisten definieren
+      const happyHourBlocked = new Set([
+        "mai-tai", "long-island", "zombie", "mojito", "pornstar-martini",
+        "negroni", "whiskey-sour", "pisco-sour", "paloma", "caipirinha",
+        "boulevardier", "martini", "new-york-sour"
+      ]);
+
+      const eveningBlocked = new Set([
+        "mai-tai", "long-island", "zombie", "mojito"
+      ]);
+
+      // 2. Pools vorbereiten (Nur alkoholische, keine Slush-Only Rezepte)
+      const allAlcoholicEntries = Object.entries(recipes).filter(([id, recipe]) => {
+        return recipe.category !== "Zero Proof" && !recipe.isSlushOnly;
+      });
+
+      // 3. Happy Hour Auswahl (3 Stück)
+      const happyHourPool = allAlcoholicEntries.filter(([id]) => !happyHourBlocked.has(id));
+      
+      if (happyHourPool.length < 3) return null; // Falls zu wenig Auswahl da ist
+
+      const shuffledHH = shuffleArray(happyHourPool);
+      const happyHourAlcoholic = [shuffledHH[0][0], shuffledHH[1][0], shuffledHH[2][0]];
+
+      // 4. Virgin Auswahl (1 Stück)
+      const virginPool = Object.entries(recipes).filter(([, recipe]) => {
+        return recipe.category === "Zero Proof" && !recipe.isSlushOnly;
+      });
+      const happyHourVirgin = pickRandom(virginPool)?.[0] || "ipanema";
+
+      // 5. Cocktail des Abends (1 Stück, fast alles erlaubt außer die ganz großen Brecher)
+      const eveningPool = allAlcoholicEntries.filter(([id]) => !eveningBlocked.has(id));
+      const cocktailOfTheEvening = pickRandom(eveningPool)?.[0] || "touchdown";
+
+      return {
+        happyHourAlcoholic,
+        happyHourVirgin,
+        cocktailOfTheEvening
+      };
+    }
+
+    // Hilfsfunktion zum Rendern (ebenfalls ersetzen/korrigieren)
+    function renderSpecialSelection(selection) {
+      if (!selection) {
+        specialSelectionPreview.innerHTML = "Fehler: Nicht genug Cocktails für die Auswahl gefunden.";
+        return;
+      }
+
+      specialSelectionPreview.innerHTML = `
+        <div class="special-preview-group">
+          <strong>Happy Hour (Alkoholisch)</strong>
+          <ul>${selection.happyHourAlcoholic.map(id => `<li>${formatRecipeTitleById(id)}</li>`).join("")}</ul>
+        </div>
+        <div class="special-preview-group">
+          <strong>Happy Hour (Virgin)</strong>
+          <ul><li>${formatRecipeTitleById(selection.happyHourVirgin)}</li></ul>
+        </div>
+        <div class="special-preview-group">
+          <strong>Cocktail des Abends</strong>
+          <ul><li>${formatRecipeTitleById(selection.cocktailOfTheEvening)}</li></ul>
+        </div>
+      `;
+
+      specialExportOutput.textContent = 
+`Happy Hour:
+- ${formatRecipeTitleById(selection.happyHourAlcoholic[0])}
+- ${formatRecipeTitleById(selection.happyHourAlcoholic[1])}
+- ${formatRecipeTitleById(selection.happyHourAlcoholic[2])}
+- ${formatRecipeTitleById(selection.happyHourVirgin)} (Virgin)
+
+Cocktail des Abends:
+- ${formatRecipeTitleById(selection.cocktailOfTheEvening)}`;
     }
 
     function buildBatchOptions() {
