@@ -1745,25 +1745,25 @@
    
     const FOUR_WEEK_SPECIALS = [
   {
-    date: "Samstag, 04.05.2026",
+    date: "Samstag, 02.05.2026",
     happyHourAlcoholic: ["solero", "gin-fizz", "pina-colada"],
     happyHourVirgin: "ipanema",
     cocktailOfTheEvening: "pornstar-martini"
   },
   {
-    date: "Samstag, 11.05.2026",
+    date: "Samstag, 09.05.2026",
     happyHourAlcoholic: ["melon-sour", "blue-lagoon", "tequila-sunrise"],
     happyHourVirgin: "maracuja-mule",
     cocktailOfTheEvening: "espresso-martini"
   },
   {
-    date: "Samstag, 18.05.2026",
+    date: "Samstag, 16.05.2026",
     happyHourAlcoholic: ["bahama-mama", "gin-fizz", "sex-on-the-beach"],
     happyHourVirgin: "virgin-colada",
     cocktailOfTheEvening: "pisco-sour"
   },
   {
-    date: "Samstag, 25.05.2026",
+    date: "Samstag, 23.05.2026",
     happyHourAlcoholic: ["touchdown", "solero", "pina-colada"],
     happyHourVirgin: "ipanema",
     cocktailOfTheEvening: "margarita"
@@ -1856,6 +1856,10 @@
         const selection = generateSpecialSelection();
         renderSpecialSelection(selection);
     };
+
+    if (generateSpecialsBtn) {
+  generateSpecialsBtn.onclick = runSpecialGenerator;
+}
 
     // Button-Events zuweisen
     if (openSpecialGeneratorBtn) {
