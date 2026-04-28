@@ -1795,7 +1795,7 @@
             "boulevardier", "martini", "new-york-sour"
         ]);
 
-        const eveningBlocked = new Set(["mai-tai", "long-island", "zombie", "mojito"]);
+        const eveningBlocked = new Set([ "long-island", "mojito", "new-york-sour", "caipirinha", "negroni", "bouevardier", "martini"]);
 
         // Pools filtern
         const allAlcs = Object.entries(recipes).filter(([id, r]) => r.category !== "Zero Proof" && !r.isSlushOnly);
