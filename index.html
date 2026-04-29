@@ -24,11 +24,10 @@
       --radius-sm: 14px;
     }
     
-    
     .batch-select option {
-  background: #111111; /* Dunkler Hintergrund für die Auswahlliste */
-  color: #ffffff;      /* Weiße Schrift */
-}
+      background: #111111; /* Dunkler Hintergrund für die Auswahlliste */
+      color: #ffffff;      /* Weiße Schrift */
+    }
 
     html, body {
       margin: 0;
@@ -1574,25 +1573,23 @@
       },
 
       "Waldmeister-slush": {
-  title: "Waldmeister-Slush",
-  category: "BATCHES", 
-  batchBaseMl: 1000,
-  batchable: true,
-  batchModes: ["slush"], // Nur als Standard-Batch
-  batchOnly: true, // <-- DER NEUE SCHALTER
-  ingredients: [
-    { amount: 185, unit: "ml", name: "Vodka" },
-    { amount: 200, unit: "ml", name: "Waldmeistersirup" },
-    { amount: 30, unit: "ml", name: "Pulco" },
-    { amount: 585, unit: "ml", name: "Wasser" }
-  ],
-  steps: [
-    "7,4% Alkohol",
-    "Alles zusammenmischen und kalt stellen."
-  ]
-},
-
-      
+        title: "Waldmeister-Slush",
+        category: "BATCHES", 
+        batchBaseMl: 1000,
+        batchable: true,
+        batchModes: ["slush"], // Nur als Standard-Batch
+        batchOnly: true, // <-- DER NEUE SCHALTER
+        ingredients: [
+          { amount: 185, unit: "ml", name: "Vodka" },
+          { amount: 200, unit: "ml", name: "Waldmeistersirup" },
+          { amount: 30, unit: "ml", name: "Pulco" },
+          { amount: 585, unit: "ml", name: "Wasser" }
+        ],
+        steps: [
+          "7,4% Alkohol",
+          "Alles zusammenmischen und kalt stellen."
+        ]
+      }
     };
 
     // DOM Elemente
@@ -1853,6 +1850,9 @@
 
     categoryButtons.forEach(btn => {
       btn.addEventListener("click", () => {
+        // NEU: Leert das Suchfeld, sobald eine Kategorie angeklickt wird
+        searchInput.value = ""; 
+        
         categoryButtons.forEach(b => b.classList.remove("active"));
         btn.classList.add("active");
         activeCategory = btn.dataset.category;
@@ -1860,10 +1860,15 @@
       });
     });
 
+    // NEU: Klick-Event für die Cocktail-Kacheln, damit auch hier die Suche geleert wird
     cocktailTiles.forEach(tile => {
       tile.addEventListener("click", () => {
         const id = tile.dataset.id;
         showRecipe(id);
+        
+        // Suche leeren und Filterung aufheben, damit alle Kacheln wieder da sind
+        searchInput.value = "";
+        filterCocktails();
       });
     });
 
