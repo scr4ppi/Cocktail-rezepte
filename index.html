@@ -23,6 +23,12 @@
       --radius-md: 18px;
       --radius-sm: 14px;
     }
+    
+    
+    .batch-select option {
+  background: #111111; /* Dunkler Hintergrund für die Auswahlliste */
+  color: #ffffff;      /* Weiße Schrift */
+}
 
     html, body {
       margin: 0;
@@ -95,27 +101,32 @@
     }
 
     .batch-mode-btn {
-    flex: 1;
-    border: 1px solid var(--border);
-    background: rgba(255, 255, 255, 0.06);
-    color: var(--text);
-    padding: 8px;
-    border-radius: 12px;
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: 0.2s;
-}
-.batch-mode-btn.active {
-    background: #007bff; /* Blau für Standard-Batch */
-    border-color: #007bff;
-}
-.batch-mode-btn[data-mode="slush"].active {
-    background: #00d4ff; /* Hellblau für Slush */
-    border-color: #00d4ff;
-    color: #000;
-}
+      flex: 1;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text);
+      padding: 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .batch-mode-btn.active {
+      background: #007bff;
+      border-color: #007bff;
+    }
+    .batch-mode-btn[data-mode="tap"].active {
+      background: #00ff88;
+      border-color: #00ff88;
+      color: #000;
+    }
+    .batch-mode-btn[data-mode="slush"].active {
+      background: #00d4ff;
+      border-color: #00d4ff;
+      color: #000;
+    }
 
     .header-actions {
       margin-top: 14px;
@@ -636,8 +647,8 @@
             Specials zufällig wählen
           </button>
           <button id="generateFourWeeksBtn" class="ingredients-btn" type="button">
-  geplante Happy Hour
-</button>
+            geplante Happy Hour
+          </button>
         </div>
       </div>
 
@@ -744,11 +755,12 @@
               <div class="batch-controls">
                 <select id="batchRecipeSelect" class="batch-select"></select>
 
-                <div style="margin: 10px 0; display: flex; gap: 10px; align-items: center;">
+                <div id="batchModeContainer" style="margin: 10px 0; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
                   <span style="font-size: 13px; color: var(--muted); text-transform: uppercase;">Modus:</span>
-                  <button class="batch-mode-btn active" type="button" data-mode="standard">Batch (Vorkühlen)</button>
+                  <button class="batch-mode-btn active" type="button" data-mode="standard">Batch (Konzentrat)</button>
+                  <button class="batch-mode-btn" type="button" data-mode="tap">Zapfen (inkl. Wasser)</button>
                   <button class="batch-mode-btn" type="button" data-mode="slush">Slush (inkl. Wasser)</button>
-              </div>
+                </div>
 
                 <div class="batch-size-row">
                   <button class="batch-size-btn active" type="button" data-size="3">3 L</button>
@@ -868,7 +880,8 @@
         alcoholVolume: "ca. 16 % vol",
         image: "garnish/whiskeySourGarnish.webp",
         batchBaseMl: 150,
-        batchable: true,
+        batchable: false,
+        batchModes: ["standard"], // Nur Konzentrat
         ingredients: [
           { amount: 5, unit: "cl", name: "Whiskey (Standard: Jim Beam)" },
           { amount: 3, unit: "cl", name: "Pulco" },
@@ -891,7 +904,8 @@
         alcoholVolume: "ca. 17 % vol",
         image: "garnish/NewYorkSourGarnish.JPG.webp",
         batchBaseMl: 140,
-        batchable: true,
+        batchable: false,
+        batchModes: ["standard"],
         ingredients: [
           { amount: 5, unit: "cl", name: "Whiskey (Standard: Jim Beam)" },
           { amount: 3, unit: "cl", name: "Pulco" },
@@ -914,7 +928,8 @@
         alcoholVolume: "ca. 18 % vol",
         image: "garnish/PiscoSour.webp",
         batchBaseMl: 150,
-        batchable: true,
+        batchable: false,
+        batchModes: ["standard"],
         ingredients: [
           { amount: 6, unit: "cl", name: "Pisco" },
           { amount: 2.25, unit: "cl", name: "frischer Limettensaft" },
@@ -940,6 +955,8 @@
         image: "garnish/MelonSourGarnish.JPG.webp",
         batchBaseMl: 210,
         batchable: true,
+        batchModes: ["standard", "tap", "slush"],
+        dilution: 0.20,
         ingredients: [
           { amount: 2, unit: "cl", name: "Vodka" },
           { amount: 4, unit: "cl", name: "Melonenlikör" },
@@ -962,6 +979,7 @@
         image: "garnish/GinFizzGarnish.JPG.webp",
         batchBaseMl: 140,
         batchable: true,
+        batchModes: ["standard"],
         ingredients: [
           { amount: 5, unit: "cl", name: "Gin" },
           { amount: 2.25, unit: "cl", name: "frischer Zitronensaft" },
@@ -984,6 +1002,8 @@
         image: "garnish/MaiTaiGarnish.JPG.webp",
         batchBaseMl: 157.5,
         batchable: true,
+        batchModes: ["standard", "tap"],
+        dilution: 0.25,
         ingredients: [
           { amount: 6, unit: "cl", name: "Rum-Mischung" },
           { amount: 2.25, unit: "cl", name: "frischer Limettensaft" },
@@ -1005,6 +1025,7 @@
         image: "garnish/Zombie-Garnish.webp",
         batchBaseMl: 120,
         batchable: true,
+        batchModes: ["standard"],
         ingredients: [
           { amount: 6, unit: "cl", name: "Rum-Vormischung" },
           { amount: 3, unit: "cl", name: "Ananassaft" },
@@ -1027,6 +1048,8 @@
         image: "garnish/bluelagoonGarnish.webp",
         batchBaseMl: 180,
         batchable: true,
+        batchModes: ["standard", "tap"],
+        dilution: 0.20,
         ingredients: [
           { amount: 4, unit: "cl", name: "Vodka" },
           { amount: 2, unit: "cl", name: "Blue Curaçao" },
@@ -1047,7 +1070,9 @@
         alcoholVolume: "ca. 9 % vol",
         image: "garnish/pinia_colada_garnish.JPG.webp",
         batchBaseMl: 170,
-        batchable: true,
+        batchable: false,
+        batchModes: ["standard", "slush"],
+        dilution: 0.25,
         ingredients: [
           { amount: 6, unit: "cl", name: "heller Rum" },
           { amount: 2, unit: "cl", name: "Kokossirup" },
@@ -1069,6 +1094,8 @@
         image: "garnish/Daiquirisgarnish.webp",
         batchBaseMl: 140,
         batchable: true,
+        batchModes: ["slush"], // Ausschließlich für Slush
+        dilution: 0.25,
         ingredients: [
           { amount: 5, unit: "cl", name: "Rum" },
           { amount: 4, unit: "cl", name: "Fruchtpüree Mango oder Erdbeere" },
@@ -1091,6 +1118,8 @@
         image: "garnish/BahamaMamaGarnish.webp",
         batchBaseMl: 165,
         batchable: true,
+        batchModes: ["standard", "tap", "slush"],
+        dilution: 0.20,
         ingredients: [
           { amount: 3, unit: "cl", name: "Rum" },
           { amount: 2, unit: "cl", name: "Malibu" },
@@ -1114,6 +1143,8 @@
         image: "garnish/Solero-Garnish.webp",
         batchBaseMl: 155,
         batchable: true,
+        batchModes: ["standard", "tap", "slush"],
+        dilution: 0.20,
         ingredients: [
           { amount: 4.5, unit: "cl", name: "Vodka" },
           { amount: 2, unit: "cl", name: "Vanillesirup" },
@@ -1135,6 +1166,8 @@
         image: "garnish/Negroni_garnish.JPG.webp",
         batchBaseMl: 90,
         batchable: true,
+        batchModes: ["standart", "tap"],
+        dilution: 0.25,
         ingredients: [
           { amount: 3, unit: "cl", name: "Gin" },
           { amount: 3, unit: "cl", name: "Campari" },
@@ -1154,7 +1187,7 @@
         alcoholVolume: "ca. 28 % vol",
         image: "garnish/MartiniGarnish.JPG.webp",
         batchBaseMl: 70,
-        batchable: true,
+        batchable: false, // <-- Taucht nicht im Batch-Dropdown auf!
         ingredients: [
           { amount: 5.5, unit: "cl", name: "Gin" },
           { amount: 1.5, unit: "cl", name: "trockener Wermut" },
@@ -1176,6 +1209,8 @@
         image: "garnish/Negroni_garnish.JPG.webp",
         batchBaseMl: 90,
         batchable: true,
+        batchModes: ["standard", "tap"],
+        dilution: 0.25,
         ingredients: [
           { amount: 3, unit: "cl", name: "Bourbon Whiskey" },
           { amount: 3, unit: "cl", name: "roter Wermut" },
@@ -1196,6 +1231,8 @@
         image: "garnish/LongIslandIceTeaGarnish.JPG.webp",
         batchBaseMl: 190,
         batchable: true,
+        batchModes: ["standard"],
+        dilution: 0.20,
         ingredients: [
           { amount: 7, unit: "cl", name: "Vormischung" },
           { amount: 2, unit: "cl", name: "Zitronensaft" },
@@ -1219,7 +1256,8 @@
         alcoholVolume: "ca. 10 % vol",
         image: "garnish/MoscowMuleGarnish.JPG.webp",
         batchBaseMl: 155,
-        batchable: true,
+        batchable: false,
+        batchModes: ["standard"],
         ingredients: [
           { amount: 5, unit: "cl", name: "Vodka" },
           { amount: 1.5, unit: "cl", name: "Limettensaft" },
@@ -1240,7 +1278,8 @@
         alcoholVolume: "ca. 11 % vol",
         image: "garnish/MojitoGarnish.JPG.webp",
         batchBaseMl: 170,
-        batchable: true,
+        batchable: false,
+        batchModes: ["standard"],
         ingredients: [
           { amount: 5, unit: "cl", name: "weißer Rum" },
           { amount: 4, unit: "piece", name: "Limettenachtel" },
@@ -1265,7 +1304,8 @@
         alcoholVolume: "ca. 14 % vol",
         image: "garnish/CaipirinhaGarnish.webp",
         batchBaseMl: 120,
-        batchable: true,
+        batchable: false,
+        batchModes: ["standard"],
         ingredients: [
           { amount: 5, unit: "cl", name: "Cachaça" },
           { amount: 4, unit: "piece", name: "Limettenachtel in Stücken" },
@@ -1287,7 +1327,8 @@
         alcoholVolume: "ca. 10 % vol",
         image: "garnish/CubaLibreGarnish.webp",
         batchBaseMl: 160,
-        batchable: true,
+        batchable: false,
+        batchModes: ["standard"],
         ingredients: [
           { amount: 5, unit: "cl", name: "Rum" },
           { amount: 3, unit: "piece", name: "Limettenachtel" },
@@ -1309,6 +1350,8 @@
         image: "garnish/TequilaSUnriseGarnish.webp",
         batchBaseMl: 170,
         batchable: true,
+        batchModes: ["standard", "slush"],
+        dilution: 0.20,
         ingredients: [
           { amount: 5, unit: "cl", name: "Tequila" },
           { amount: 10, unit: "cl", name: "Orangensaft" },
@@ -1330,6 +1373,8 @@
         image: "garnish/SexontheBeachGarnish.JPG.webp",
         batchBaseMl: 170,
         batchable: true,
+        batchModes: ["standard", "tap", "slush"],
+        dilution: 0.20,
         ingredients: [
           { amount: 4, unit: "cl", name: "Vodka" },
           { amount: 2, unit: "cl", name: "Pfirsichlikör" },
@@ -1352,6 +1397,8 @@
         image: "https://images.unsplash.com/photo-1546173159-315724a31696?auto=format&fit=crop&w=300&q=80",
         batchBaseMl: 165,
         batchable: true,
+        batchModes: ["standard", "tap", "slush"],
+        dilution: 0.20,
         ingredients: [
           { amount: 4, unit: "cl", name: "Vodka" },
           { amount: 2, unit: "cl", name: "Pfirsichlikör" },
@@ -1373,7 +1420,8 @@
         alcoholVolume: "ca. 10 % vol",
         image: "garnish/PalomaGarnish.JPG.webp",
         batchBaseMl: 170,
-        batchable: true,
+        batchable: false,
+        batchModes: ["standard"],
         ingredients: [
           { amount: 5, unit: "cl", name: "Tequila" },
           { amount: 2, unit: "cl", name: "Limettensaft" },
@@ -1395,6 +1443,7 @@
         image: "garnish/pornstarGarnish.JPG.webp",
         batchBaseMl: 145,
         batchable: true,
+        batchModes: ["standard"],
         ingredients: [
           { amount: 4, unit: "cl", name: "Vodka" },
           { amount: 2, unit: "cl", name: "Passionsfruchtlikör" },
@@ -1419,6 +1468,7 @@
         image: "https://images.pexels.com/photos/34429981/pexels-photo-34429981/free-photo-of-classic-espresso-martini-on-marble-table.jpeg",
         batchBaseMl: 90,
         batchable: true,
+        batchModes: ["standard"],
         ingredients: [
           { amount: 3, unit: "cl", name: "Vodka" },
           { amount: 2, unit: "cl", name: "Kaffeelikör / 43 Baristo" },
@@ -1440,6 +1490,8 @@
         image: "garnish/MargharitaGarnish.JPG.webp",
         batchBaseMl: 100,
         batchable: true,
+        batchModes: ["standard", "slush"],
+        dilution: 0.25,
         ingredients: [
           { amount: 5, unit: "cl", name: "Tequila" },
           { amount: 2, unit: "cl", name: "Triple Sec" },
@@ -1460,7 +1512,8 @@
         alcoholVolume: "0,0 % vol",
         image: "garnish/Ipanemagarnish.JPG.webp",
         batchBaseMl: 180,
-        batchable: true,
+        batchable: false,
+        batchModes: ["standard"],
         ingredients: [
           { amount: 2, unit: "barspoon", name: "Rohrzucker" },
           { amount: 1, unit: "piece", name: "Limette in Stücken" },
@@ -1483,6 +1536,7 @@
         image: "garnish/MaracujaMuleGarnish.JPG.webp",
         batchBaseMl: 170,
         batchable: true,
+        batchModes: ["standard"],
         ingredients: [
           { amount: 2, unit: "cl", name: "Limettensaft" },
           { amount: 8, unit: "cl", name: "Maracujasaft" },
@@ -1504,7 +1558,9 @@
         alcoholVolume: "0,0 % vol",
         image: "https://images.pexels.com/photos/10986589/pexels-photo-10986589.jpeg",
         batchBaseMl: 150,
-        batchable: true,
+        batchable: false,
+        batchModes: ["standard", "slush"],
+        dilution: 0.25,
         ingredients: [
           { amount: 2, unit: "cl", name: "Sahne" },
           { amount: 3, unit: "cl", name: "Kokossirup" },
@@ -1515,10 +1571,29 @@
           "In ein Glas füllen.",
           "Servieren."
         ]
-      }
+      },
+
+      "Waldmeister-slush": {
+  title: "Waldmeister-Slush",
+  category: "BATCHES", 
+  batchBaseMl: 1000,
+  batchable: true,
+  batchModes: ["slush"], // Nur als Standard-Batch
+  batchOnly: true, // <-- DER NEUE SCHALTER
+  ingredients: [
+    { amount: 185, unit: "ml", name: "Vodka" },
+    { amount: 200, unit: "ml", name: "Waldmeistersirup" },
+    { amount: 30, unit: "ml", name: "Pulco" },
+    { amount: 585, unit: "ml", name: "Wasser" }
+  ],
+  steps: [
+    "7,4% Alkohol",
+    "Alles zusammenmischen und kalt stellen."
+  ]
+},
+
+      
     };
-
-
 
     // DOM Elemente
     const categoryButtons = document.querySelectorAll(".category-btn");
@@ -1561,6 +1636,7 @@
     const batchPreviewTitle = document.getElementById("batchPreviewTitle");
     const batchPreviewSubtitle = document.getElementById("batchPreviewSubtitle");
     const batchPreviewImage = document.getElementById("batchPreviewImage");
+    // Wird später initialisiert, da der Container neu aufgebaut wurde
     const batchModeButtons = document.querySelectorAll(".batch-mode-btn");
 
     let activeCategory = "PARTY-FAVORITES";
@@ -1594,7 +1670,39 @@
       return `${formatNumber(scaled)} ${unit}`;
     }
 
-    // Kern-Logik
+    // Kern-Logik: UI für Batching aktualisieren
+    function updateBatchUI() {
+        const id = batchRecipeSelect.value;
+        const recipe = recipes[id];
+        if (!recipe) return;
+
+        // Standardwerte falls im Rezept vergessen
+        const allowedModes = recipe.batchModes || ["standard"];
+
+        // Buttons ein-/ausblenden
+        batchModeButtons.forEach(btn => {
+            const mode = btn.dataset.mode;
+            if (allowedModes.includes(mode)) {
+                btn.style.display = "block";
+            } else {
+                btn.style.display = "none";
+            }
+        });
+
+        // Falls der aktuell gewählte Modus vom neuen Cocktail nicht unterstützt wird, wechsle auf den ersten erlaubten
+        if (!allowedModes.includes(activeBatchMode)) {
+            activeBatchMode = allowedModes[0];
+        }
+
+        // Active-Klasse neu setzen
+        batchModeButtons.forEach(btn => {
+            btn.classList.toggle("active", btn.dataset.mode === activeBatchMode);
+        });
+
+        // Erst jetzt kalkulieren
+        renderBatchCalculator();
+    }
+
     function renderBatchCalculator() {
         const id = batchRecipeSelect.value;
         const targetLiters = getSelectedBatchLiters();
@@ -1607,19 +1715,34 @@
         let factor;
         let waterMl = 0;
         const targetTotalMl = targetLiters * 1000;
+        
+        // Standardmäßige Verwässerung: 25% (0.25), falls im Rezept nicht anders definiert
+        const dilutionRate = recipe.dilution !== undefined ? recipe.dilution : 0.25;
 
-        if (activeBatchMode === "slush" && recipe.category !== "CUSTOM") {
-            const cocktailPartMl = targetTotalMl * 0.75;
-            waterMl = targetTotalMl * 0.25;
+        // Wenn "Zapfen" oder "Slush", brauchen wir Wasser
+        if ((activeBatchMode === "slush" || activeBatchMode === "tap") && recipe.category !== "CUSTOM") {
+            const cocktailPartMl = targetTotalMl * (1 - dilutionRate);
+            waterMl = targetTotalMl * dilutionRate;
             factor = cocktailPartMl / recipe.batchBaseMl;
         } else {
+            // Standard (Konzentrat)
             factor = targetTotalMl / recipe.batchBaseMl;
         }
 
-        batchResultHeading.textContent = activeBatchMode === "slush" ? "Slush-Füllmenge (Exakt)" : "Batch-Mengen (Konzentrat)";
+        // Texte dynamisch anpassen
+        if (activeBatchMode === "slush") {
+            batchResultHeading.textContent = "Slush-Füllmenge (Exakt)";
+            batchPreviewSubtitle.textContent = "Optimiert für Slush";
+        } else if (activeBatchMode === "tap") {
+            batchResultHeading.textContent = "Zapf-Menge (Ready to Drink)";
+            batchPreviewSubtitle.textContent = "Inklusive Dilution";
+        } else {
+            batchResultHeading.textContent = "Batch-Mengen (Konzentrat)";
+            batchPreviewSubtitle.textContent = "Konzentrat (noch shaken!)";
+        }
+
         batchOutputMeta.textContent = `Basis: ca. ${formatNumber(recipe.batchBaseMl)} ml · Faktor ${formatNumber(factor)}`;
         batchPreviewTitle.textContent = recipe.title;
-        batchPreviewSubtitle.textContent = activeBatchMode === "slush" ? "Optimiert für Slush" : "Konzentrat";
         batchPreviewImage.src = recipe.image;
 
         let html = recipe.ingredients.map(item => {
@@ -1627,17 +1750,31 @@
             return `<li><strong>${text}</strong> ${item.name}</li>`;
         }).join("");
 
-        if (activeBatchMode === "slush" && waterMl > 0) {
+        // Wasser zum Rezept hinzufügen, falls nötig
+        if (waterMl > 0) {
             const waterText = waterMl >= 1000 ? `${formatNumber(waterMl / 1000)} l` : `${formatNumber(waterMl)} ml`;
-            html += `<li style="color: #00d4ff; border-top: 2px dashed rgba(0,212,255,0.4); padding-top: 8px; margin-top: 8px;">
-                <strong>${waterText}</strong> Stilles Wasser (RESTMENGE BIS ZIELVOLUMEN)
+            const waterColor = activeBatchMode === "slush" ? "#00d4ff" : "#00ff88";
+            html += `<li style="color: ${waterColor}; border-top: 2px dashed rgba(255,255,255,0.2); padding-top: 8px; margin-top: 8px;">
+                <strong>${waterText}</strong> Stilles Wasser (Schmelzwasser-Ersatz)
             </li>`;
         }
 
         batchResultList.innerHTML = html;
-        batchNoteList.innerHTML = (activeBatchMode === "slush" 
-            ? [`Mische erst alles, dann fülle Wasser bis genau ${formatLiters(targetLiters)} auf.`] 
-            : ["Konzentrat zum Vorkühlen. Erst beim Servieren auf Eis shaken."]).map(n => `<li>${n}</li>`).join("");
+
+        // Hinweise anpassen
+        let notes = [];
+        if (activeBatchMode === "slush") {
+            notes.push(`Mische erst alles, dann fülle Wasser bis genau ${formatLiters(targetLiters)} auf.`);
+            notes.push("Gut umrühren, bevor es in die Slush-Maschine geht.");
+        } else if (activeBatchMode === "tap") {
+            notes.push("Ready-to-Drink! Das Schmelzwasser ist bereits enthalten.");
+            notes.push("Kann direkt auf Eis serviert werden.");
+        } else {
+            notes.push("Konzentrat zum Vorkühlen.");
+            notes.push("WICHTIG: Muss beim Servieren noch auf Eis geshaked/gerührt werden!");
+        }
+        
+        batchNoteList.innerHTML = notes.map(n => `<li>${n}</li>`).join("");
     }
 
     function getSelectedBatchLiters() {
@@ -1648,20 +1785,19 @@
       return parseFloat(activeBatchSize);
     }
 
-   function generateFourWeekPreview() {
-  specialSelectionPreview.innerHTML = FOUR_WEEK_SPECIALS.map((selection, index) => `
-    <div class="special-preview-group">
-      <strong>Woche ${index + 1} · ${selection.date}</strong>
-      <ul>
-        <li>Happy Hour: ${selection.happyHourAlcoholic.map(formatRecipeTitleById).join(", ")}</li>
-        <li>Virgin: ${formatRecipeTitleById(selection.happyHourVirgin)}</li>
-        <li>Cocktail des Abends: ${formatRecipeTitleById(selection.cocktailOfTheEvening)}</li>
-      </ul>
-    </div>
-  `).join("");
-
-  specialExportOutput.textContent = "";
-}
+    function generateFourWeekPreview() {
+      specialSelectionPreview.innerHTML = FOUR_WEEK_SPECIALS.map((selection, index) => `
+        <div class="special-preview-group">
+          <strong>Woche ${index + 1} · ${selection.date}</strong>
+          <ul>
+            <li>Happy Hour: ${selection.happyHourAlcoholic.map(formatRecipeTitleById).join(", ")}</li>
+            <li>Virgin: ${formatRecipeTitleById(selection.happyHourVirgin)}</li>
+            <li>Cocktail des Abends: ${formatRecipeTitleById(selection.cocktailOfTheEvening)}</li>
+          </ul>
+        </div>
+      `).join("");
+      specialExportOutput.textContent = "";
+    }
   
     // UI Funktionen
     function showRecipe(id) {
@@ -1686,7 +1822,7 @@
         batchPanel.classList.add("active");
         searchWrap.style.display = "none";
         sectionTitle.textContent = "Batches / Mengen";
-        renderBatchCalculator();
+        updateBatchUI();
         return;
       }
       recipePanel.classList.add("active");
@@ -1707,6 +1843,7 @@
     // Event Listener Initialisierung
     batchModeButtons.forEach(btn => {
       btn.addEventListener("click", () => {
+        if (btn.style.display === "none") return;
         batchModeButtons.forEach(b => b.classList.remove("active"));
         btn.classList.add("active");
         activeBatchMode = btn.dataset.mode;
@@ -1724,11 +1861,11 @@
     });
 
     cocktailTiles.forEach(tile => {
-  tile.addEventListener("click", () => {
-    const id = tile.dataset.id;
-    showRecipe(id);
-  });
-});
+      tile.addEventListener("click", () => {
+        const id = tile.dataset.id;
+        showRecipe(id);
+      });
+    });
 
     batchSizeButtons.forEach(btn => {
       btn.addEventListener("click", () => {
@@ -1739,37 +1876,35 @@
       });
     });
 
-   // ==========================================
+    // ==========================================
     // 6. SPECIALS & GENERATOR LOGIK
     // ==========================================
-   
     const FOUR_WEEK_SPECIALS = [
- {
-    date: "Samstag, 02.05.2026",
-    happyHourAlcoholic: ["tequila-sunrise", "pina-colada", "blue-lagoon"],
-    happyHourVirgin: "ipanema",
-    cocktailOfTheEvening: "whiskey-sour"
-  },
-  {
-    date: "Samstag, 09.05.2026",
-    happyHourAlcoholic: ["melon-sour", "blue-lagoon", "tequila-sunrise"],
-    happyHourVirgin: "maracuja-mule",
-    cocktailOfTheEvening: "espresso-martini"
-  },
-  {
-    date: "Samstag, 16.05.2026",
-    happyHourAlcoholic: ["bahama-mama", "gin-fizz", "sex-on-the-beach"],
-    happyHourVirgin: "virgin-colada",
-    cocktailOfTheEvening: "pisco-sour"
-  },
-  {
-    date: "Samstag, 23.05.2026",
-    happyHourAlcoholic: ["touchdown", "solero", "pina-colada"],
-    happyHourVirgin: "Miami",
-    cocktailOfTheEvening: "margarita"
-  }
-];
-    
+      {
+        date: "Samstag, 02.05.2026",
+        happyHourAlcoholic: ["tequila-sunrise", "pina-colada", "blue-lagoon"],
+        happyHourVirgin: "ipanema",
+        cocktailOfTheEvening: "whiskey-sour"
+      },
+      {
+        date: "Samstag, 09.05.2026",
+        happyHourAlcoholic: ["melon-sour", "blue-lagoon", "tequila-sunrise"],
+        happyHourVirgin: "maracuja-mule",
+        cocktailOfTheEvening: "espresso-martini"
+      },
+      {
+        date: "Samstag, 16.05.2026",
+        happyHourAlcoholic: ["bahama-mama", "gin-fizz", "sex-on-the-beach"],
+        happyHourVirgin: "virgin-colada",
+        cocktailOfTheEvening: "pisco-sour"
+      },
+      {
+        date: "Samstag, 23.05.2026",
+        happyHourAlcoholic: ["touchdown", "solero", "pina-colada"],
+        happyHourVirgin: "Miami",
+        cocktailOfTheEvening: "margarita"
+      }
+    ];
     
     function pickRandom(arr) { 
         return arr && arr.length ? arr[Math.floor(Math.random() * arr.length)] : null; 
@@ -1785,8 +1920,8 @@
     }
 
     function formatRecipeTitleById(id) {
-  return recipes[id] ? recipes[id].title : id;
-}
+      return recipes[id] ? recipes[id].title : id;
+    }
 
     function generateSpecialSelection() {
         const happyHourBlocked = new Set([
@@ -1795,12 +1930,12 @@
             "boulevardier", "martini", "new-york-sour"
         ]);
 
-        const eveningBlocked = new Set([ "long-island", "mojito", "new-york-sour", "caipirinha", "negroni", "bouevardier", "martini"]);
+        const eveningBlocked = new Set([ "long-island", "mojito", "new-york-sour", "caipirinha", "negroni", "boulevardier", "martini"]);
 
         // Pools filtern
-        const allAlcs = Object.entries(recipes).filter(([id, r]) => r.category !== "Zero Proof" && !r.isSlushOnly);
+         const allAlcs = Object.entries(recipes).filter(([id, r]) => r.category !== "Zero Proof" && !r.isSlushOnly && !r.batchOnly);
         const hhPool = allAlcs.filter(([id]) => !happyHourBlocked.has(id));
-        const virgins = Object.entries(recipes).filter(([id, r]) => r.category === "Zero Proof" && !r.isSlushOnly);
+        const virgins = Object.entries(recipes).filter(([id, r]) => r.category === "Zero Proof" && !r.isSlushOnly && !r.batchOnly);
 
         if (hhPool.length < 3) return null;
 
@@ -1813,46 +1948,46 @@
         };
     }
 
-   function renderSpecialSelection(selection) {
-  if (!selection) {
-    specialSelectionPreview.innerHTML = "Fehler: Zu wenig Cocktails im Pool.";
-    return;
-  }
+    function renderSpecialSelection(selection) {
+      if (!selection) {
+        specialSelectionPreview.innerHTML = "Fehler: Zu wenig Cocktails im Pool.";
+        return;
+      }
 
-  specialSelectionPreview.innerHTML = `
-    <div class="special-preview-group">
-      <strong>Happy Hour (Alkoholisch)</strong>
-      <ul>${selection.happyHourAlcoholic.map(id => `<li>${formatRecipeTitleById(id)}</li>`).join("")}</ul>
-    </div>
-    <div class="special-preview-group">
-      <strong>Happy Hour (Virgin)</strong>
-      <ul><li>${formatRecipeTitleById(selection.happyHourVirgin)}</li></ul>
-    </div>
-    <div class="special-preview-group">
-      <strong>Cocktail des Abends</strong>
-      <ul><li>${formatRecipeTitleById(selection.cocktailOfTheEvening)}</li></ul>
-    </div>`;
+      specialSelectionPreview.innerHTML = `
+        <div class="special-preview-group">
+          <strong>Happy Hour (Alkoholisch)</strong>
+          <ul>${selection.happyHourAlcoholic.map(id => `<li>${formatRecipeTitleById(id)}</li>`).join("")}</ul>
+        </div>
+        <div class="special-preview-group">
+          <strong>Happy Hour (Virgin)</strong>
+          <ul><li>${formatRecipeTitleById(selection.happyHourVirgin)}</li></ul>
+        </div>
+        <div class="special-preview-group">
+          <strong>Cocktail des Abends</strong>
+          <ul><li>${formatRecipeTitleById(selection.cocktailOfTheEvening)}</li></ul>
+        </div>
+      `;
+      specialExportOutput.textContent = `{
+        happyHourAlcoholic: ["${selection.happyHourAlcoholic[0]}", "${selection.happyHourAlcoholic[1]}", "${selection.happyHourAlcoholic[2]}"],
+        happyHourVirgin: "${selection.happyHourVirgin}",
+        cocktailOfTheEvening: "${selection.cocktailOfTheEvening}"
+      }`;
+    }
 
-  specialExportOutput.textContent =
-`  {
-    happyHourAlcoholic: ["${selection.happyHourAlcoholic[0]}", "${selection.happyHourAlcoholic[1]}", "${selection.happyHourAlcoholic[2]}"],
-    happyHourVirgin: "${selection.happyHourVirgin}",
-    cocktailOfTheEvening: "${selection.cocktailOfTheEvening}"
-  },`;
-}
     function buildBatchOptions() {
         batchRecipeSelect.innerHTML = Object.entries(recipes)
-            .filter(([, r]) => r.batchable || r.category === "CUSTOM")
+            .filter(([, r]) => r.batchable !== false) // <-- WICHTIG: Filtern der Batch-Auswahl
             .sort((a, b) => a[1].title.localeCompare(b[1].title, "de"))
             .map(([id, r]) => `<option value="${id}">${r.title}</option>`).join("");
     }
 
     if (generateFourWeeksBtn) {
-  generateFourWeeksBtn.onclick = () => {
-    generateFourWeekPreview();
-    specialGeneratorOverlay.classList.add("active");
-  };
-}
+      generateFourWeeksBtn.onclick = () => {
+        generateFourWeekPreview();
+        specialGeneratorOverlay.classList.add("active");
+      };
+    }
 
     // ==========================================
     // 7. EVENT LISTENER & INITIALISIERUNG
@@ -1865,8 +2000,8 @@
     };
 
     if (generateSpecialsBtn) {
-  generateSpecialsBtn.onclick = runSpecialGenerator;
-}
+      generateSpecialsBtn.onclick = runSpecialGenerator;
+    }
 
     // Button-Events zuweisen
     if (openSpecialGeneratorBtn) {
@@ -1874,10 +2009,6 @@
             runSpecialGenerator();
             specialGeneratorOverlay.classList.add("active");
         };
-    }
-
-    if (generateSpecialsBtn) {
-        generateSpecialsBtn.onclick = runSpecialGenerator;
     }
 
     if (closeSpecialGeneratorBtn) {
@@ -1894,15 +2025,14 @@
         };
     }
 
-
-
     // Inhaltsliste Overlay
     if (openIngredientsBtn) {
         openIngredientsBtn.onclick = () => {
-            overlayTableBody.innerHTML = Object.values(recipes)
-                .sort((a, b) => a.title.localeCompare(b.title, "de"))
-                .map(r => `<tr><td>${r.title}</td><td>${r.ingredients.map(ingredientToText).join("\n")}</td></tr>`)
-                .join("");
+          overlayTableBody.innerHTML = Object.values(recipes)
+    .filter(r => !r.batchOnly) // <-- Filtert reine Batch-Rezepte heraus
+    .sort((a, b) => a.title.localeCompare(b.title, "de"))
+    .map(r => `<tr><td>${r.title}</td><td>${r.ingredients.map(ingredientToText).join("\n")}</td></tr>`)
+    .join("");
             overlay.classList.add("active");
         };
     }
@@ -1916,14 +2046,17 @@
         if (event.target === overlay) overlay.classList.remove("active");
         if (event.target === specialGeneratorOverlay) specialGeneratorOverlay.classList.remove("active");
     };
-searchInput.addEventListener("input", filterCocktails);
-batchRecipeSelect.addEventListener("change", renderBatchCalculator);
-batchCustomInput.addEventListener("input", renderBatchCalculator);
+
+    searchInput.addEventListener("input", filterCocktails);
+    batchRecipeSelect.addEventListener("change", updateBatchUI); // Geändert!
+    batchCustomInput.addEventListener("input", renderBatchCalculator);
+
     // App starten
     buildBatchOptions();
     batchRecipeSelect.value = "whiskey-sour";
     showRecipe("long-island");
-filterCocktails();
+    filterCocktails();
+    updateBatchUI(); // Geändert: Lädt UI korrekt initial
 
   </script>
 </body>
