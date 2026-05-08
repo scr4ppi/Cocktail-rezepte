@@ -190,12 +190,12 @@
       left: 0;
       right: 0;
       display: none;
-      background: rgba(0, 0, 0, 0.92);
+      background: rgba(0, 0, 0, 0.96);
       border: 1px solid var(--border);
       border-radius: 18px;
       box-shadow: var(--shadow);
       overflow: hidden;
-      z-index: 30;
+      z-index: 100;
       backdrop-filter: blur(10px);
     }
 
@@ -220,7 +220,7 @@
     }
 
     .search-suggestion:hover {
-      background: rgba(255, 51, 51, 0.14);
+      background: rgba(255, 51, 51, 0.2);
     }
 
     .search-suggestion-title {
@@ -715,7 +715,7 @@
         <button class="cocktail-tile visible" data-id="ipanema" data-category="ZERO-PROOF">Ipanema</button>
         <button class="cocktail-tile visible" data-id="maracuja-mule" data-category="ZERO-PROOF">Maracuja Mule</button>
         <button class="cocktail-tile visible" data-id="virgin-colada" data-category="ZERO-PROOF">Virgin Colada</button>
-         <button class="cocktail-tile visible" data-id="the-alchemist-matcha" data-category="SEASONAL">the-alchemist-matcha</button>
+        <button class="cocktail-tile visible" data-id="the-alchemist-matcha" data-category="SEASONAL">The Alchemist's Matcha</button>
       </div>
 
       <div class="empty-state" id="emptyState">Kein Cocktail gefunden.</div>
@@ -882,7 +882,7 @@
         image: "garnish/whiskeySourGarnish.webp",
         batchBaseMl: 150,
         batchable: false,
-        batchModes: ["standard"], // Nur Konzentrat
+        batchModes: ["standard"], 
         ingredients: [
           { amount: 5, unit: "cl", name: "Whiskey (Standard: Jim Beam)" },
           { amount: 3, unit: "cl", name: "Pulco" },
@@ -1096,7 +1096,7 @@
         image: "garnish/Daiquirisgarnish.webp",
         batchBaseMl: 140,
         batchable: true,
-        batchModes: ["slush"], // Ausschließlich für Slush
+        batchModes: ["slush"], 
         dilution: 0.25,
         ingredients: [
           { amount: 5, unit: "cl", name: "Rum" },
@@ -1189,7 +1189,7 @@
         alcoholVolume: "ca. 28 % vol",
         image: "garnish/MartiniGarnish.JPG.webp",
         batchBaseMl: 70,
-        batchable: false, // <-- Taucht nicht im Batch-Dropdown auf!
+        batchable: false, 
         ingredients: [
           { amount: 5.5, unit: "cl", name: "Gin" },
           { amount: 1.5, unit: "cl", name: "trockener Wermut" },
@@ -1243,8 +1243,6 @@
           { amount: 3, unit: "cl", name: "Cola zum Auffüllen" }
         ],
         steps: [
-          
-        
           "In ein großes Glas auf Eis geben.",
           "Mit Cola auffüllen.",
           "Kurz umrühren.",
@@ -1575,7 +1573,7 @@
         ]
       },
 
-            "The Alchemist's Matcha": {
+      "the-alchemist-matcha": { // ID KORRIGIERT
         title: "The Alchemist's Matcha",
         category: "Seasonal",
         alcoholVolume: "8 % vol",
@@ -1602,13 +1600,13 @@
         ]
       },
 
-      "Waldmeister-slush": {
+      "waldmeister-slush": {
         title: "Waldmeister-Slush",
         category: "BATCHES", 
         batchBaseMl: 1000,
         batchable: true,
-        batchModes: ["slush"], // Nur als Standard-Batch
-        batchOnly: true, // <-- DER NEUE SCHALTER
+        batchModes: ["slush"], 
+        batchOnly: true, 
         ingredients: [
           { amount: 185, unit: "ml", name: "Vodka" },
           { amount: 200, unit: "ml", name: "Waldmeistersirup" },
@@ -1663,7 +1661,6 @@
     const batchPreviewTitle = document.getElementById("batchPreviewTitle");
     const batchPreviewSubtitle = document.getElementById("batchPreviewSubtitle");
     const batchPreviewImage = document.getElementById("batchPreviewImage");
-    // Wird später initialisiert, da der Container neu aufgebaut wurde
     const batchModeButtons = document.querySelectorAll(".batch-mode-btn");
 
     let activeCategory = "PARTY-FAVORITES";
@@ -1703,10 +1700,8 @@
         const recipe = recipes[id];
         if (!recipe) return;
 
-        // Standardwerte falls im Rezept vergessen
         const allowedModes = recipe.batchModes || ["standard"];
 
-        // Buttons ein-/ausblenden
         batchModeButtons.forEach(btn => {
             const mode = btn.dataset.mode;
             if (allowedModes.includes(mode)) {
@@ -1716,17 +1711,14 @@
             }
         });
 
-        // Falls der aktuell gewählte Modus vom neuen Cocktail nicht unterstützt wird, wechsle auf den ersten erlaubten
         if (!allowedModes.includes(activeBatchMode)) {
             activeBatchMode = allowedModes[0];
         }
 
-        // Active-Klasse neu setzen
         batchModeButtons.forEach(btn => {
             btn.classList.toggle("active", btn.dataset.mode === activeBatchMode);
         });
 
-        // Erst jetzt kalkulieren
         renderBatchCalculator();
     }
 
@@ -1743,20 +1735,16 @@
         let waterMl = 0;
         const targetTotalMl = targetLiters * 1000;
         
-        // Standardmäßige Verwässerung: 25% (0.25), falls im Rezept nicht anders definiert
         const dilutionRate = recipe.dilution !== undefined ? recipe.dilution : 0.25;
 
-        // Wenn "Zapfen" oder "Slush", brauchen wir Wasser
         if ((activeBatchMode === "slush" || activeBatchMode === "tap") && recipe.category !== "CUSTOM") {
             const cocktailPartMl = targetTotalMl * (1 - dilutionRate);
             waterMl = targetTotalMl * dilutionRate;
             factor = cocktailPartMl / recipe.batchBaseMl;
         } else {
-            // Standard (Konzentrat)
             factor = targetTotalMl / recipe.batchBaseMl;
         }
 
-        // Texte dynamisch anpassen
         if (activeBatchMode === "slush") {
             batchResultHeading.textContent = "Slush-Füllmenge (Exakt)";
             batchPreviewSubtitle.textContent = "Optimiert für Slush";
@@ -1777,7 +1765,6 @@
             return `<li><strong>${text}</strong> ${item.name}</li>`;
         }).join("");
 
-        // Wasser zum Rezept hinzufügen, falls nötig
         if (waterMl > 0) {
             const waterText = waterMl >= 1000 ? `${formatNumber(waterMl / 1000)} l` : `${formatNumber(waterMl)} ml`;
             const waterColor = activeBatchMode === "slush" ? "#00d4ff" : "#00ff88";
@@ -1788,7 +1775,6 @@
 
         batchResultList.innerHTML = html;
 
-        // Hinweise anpassen
         let notes = [];
         if (activeBatchMode === "slush") {
             notes.push(`Mische erst alles, dann fülle Wasser bis genau ${formatLiters(targetLiters)} auf.`);
@@ -1812,20 +1798,6 @@
       return parseFloat(activeBatchSize);
     }
 
-    function generateFourWeekPreview() {
-      specialSelectionPreview.innerHTML = FOUR_WEEK_SPECIALS.map((selection, index) => `
-        <div class="special-preview-group">
-          <strong>Woche ${index + 1} · ${selection.date}</strong>
-          <ul>
-            <li>Happy Hour: ${selection.happyHourAlcoholic.map(formatRecipeTitleById).join(", ")}</li>
-            <li>Virgin: ${formatRecipeTitleById(selection.happyHourVirgin)}</li>
-            <li>Cocktail des Abends: ${formatRecipeTitleById(selection.cocktailOfTheEvening)}</li>
-          </ul>
-        </div>
-      `).join("");
-      specialExportOutput.textContent = "";
-    }
-  
     // UI Funktionen
     function showRecipe(id) {
       const recipe = recipes[id];
@@ -1838,31 +1810,73 @@
       recipeImage.src = recipe.image;
       ingredientsList.innerHTML = recipe.ingredients.map(item => `<li>${ingredientToText(item)}</li>`).join("");
       stepsList.innerHTML = recipe.steps.map(item => `<li>${item}</li>`).join("");
+      
       cocktailTiles.forEach(tile => tile.classList.toggle("active", tile.dataset.id === id));
+      
+      // Falls in Mobile-Ansicht nach unten scrollen zum Rezept
+      if (window.innerWidth < 640) {
+          recipePanel.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    // NEU: Logik für Suchvorschläge
+    function selectSuggestion(id) {
+        searchInput.value = "";
+        searchSuggestions.classList.remove("active");
+        showRecipe(id);
+        filterCocktails();
     }
 
     function filterCocktails() {
+      const term = searchInput.value.trim().toLowerCase();
+
+      // Suchvorschläge Logik
+      if (term.length > 0) {
+          const matches = Object.entries(recipes).filter(([id, r]) => 
+              r.title.toLowerCase().includes(term) || 
+              r.category.toLowerCase().includes(term)
+          );
+
+          if (matches.length > 0) {
+              searchSuggestions.innerHTML = matches.map(([id, r]) => `
+                  <button class="search-suggestion" type="button" onclick="selectSuggestion('${id}')">
+                      <span class="search-suggestion-title">${r.title}</span>
+                      <span class="search-suggestion-meta">${r.category}</span>
+                  </button>
+              `).join("");
+              searchSuggestions.classList.add("active");
+          } else {
+              searchSuggestions.classList.remove("active");
+          }
+      } else {
+          searchSuggestions.classList.remove("active");
+      }
+
       if (activeCategory === "BATCHES") {
         cocktailTiles.forEach(tile => tile.classList.remove("visible", "active"));
         emptyState.style.display = "none";
         recipePanel.classList.remove("active");
         batchPanel.classList.add("active");
-        searchWrap.style.display = "none";
         sectionTitle.textContent = "Batches / Mengen";
         updateBatchUI();
         return;
       }
+
       recipePanel.classList.add("active");
       batchPanel.classList.remove("active");
-      searchWrap.style.display = "block";
       sectionTitle.textContent = "Cocktails";
-      const term = searchInput.value.trim().toLowerCase();
+      
       let count = 0;
       cocktailTiles.forEach(tile => {
         const recipe = recipes[tile.dataset.id];
-        const show = term ? (recipe && [recipe.title, recipe.category].join(" ").toLowerCase().includes(term)) : (tile.dataset.category === activeCategory);
-        tile.classList.toggle("visible", show);
-        if (show) count++;
+        const show = term ? (recipe && [recipe.title, recipe.category].join(" ").toLowerCase().includes(term)) : (tile.dataset.category.toUpperCase() === activeCategory.replace("-", " "));
+        
+        // Fix für Kategorie-Matching (Leerzeichen vs Bindestrich)
+        const tileCat = tile.dataset.category.replace(/ /g, "-").toUpperCase();
+        const finalShow = term ? (recipe && recipe.title.toLowerCase().includes(term)) : (tileCat === activeCategory.toUpperCase());
+
+        tile.classList.toggle("visible", finalShow);
+        if (finalShow) count++;
       });
       emptyState.style.display = count === 0 ? "block" : "none";
     }
@@ -1880,9 +1894,7 @@
 
     categoryButtons.forEach(btn => {
       btn.addEventListener("click", () => {
-        // NEU: Leert das Suchfeld, sobald eine Kategorie angeklickt wird
         searchInput.value = ""; 
-        
         categoryButtons.forEach(b => b.classList.remove("active"));
         btn.classList.add("active");
         activeCategory = btn.dataset.category;
@@ -1890,13 +1902,10 @@
       });
     });
 
-    // NEU: Klick-Event für die Cocktail-Kacheln, damit auch hier die Suche geleert wird
     cocktailTiles.forEach(tile => {
       tile.addEventListener("click", () => {
         const id = tile.dataset.id;
         showRecipe(id);
-        
-        // Suche leeren und Filterung aufheben, damit alle Kacheln wieder da sind
         searchInput.value = "";
         filterCocktails();
       });
@@ -1911,33 +1920,13 @@
       });
     });
 
-    // ==========================================
-    // 6. SPECIALS & GENERATOR LOGIK
-    // ==========================================
+    // Specials Logik
     const FOUR_WEEK_SPECIALS = [
       {
         date: "Samstag, 02.05.2026",
         happyHourAlcoholic: ["tequila-sunrise", "cuba-libre", "blue-lagoon"],
         happyHourVirgin: "ipanema",
         cocktailOfTheEvening: "whiskey-sour"
-      },
-      {
-        date: "Samstag, 09.05.2026",
-        happyHourAlcoholic: ["melon-sour", "blue-lagoon", "pina-colada"],
-        happyHourVirgin: "maracuja-mule",
-        cocktailOfTheEvening: "espresso-martini"
-      },
-      {
-        date: "Samstag, 16.05.2026",
-        happyHourAlcoholic: ["bahama-mama", "gin-fizz", "sex-on-the-beach"],
-        happyHourVirgin: "virgin-colada",
-        cocktailOfTheEvening: "pisco-sour"
-      },
-      {
-        date: "Samstag, 23.05.2026",
-        happyHourAlcoholic: ["touchdown", "solero", "pina-colada"],
-        happyHourVirgin: "Miami",
-        cocktailOfTheEvening: "margarita"
       }
     ];
     
@@ -1967,13 +1956,11 @@
 
         const eveningBlocked = new Set([ "long-island", "mojito", "new-york-sour", "caipirinha", "negroni", "boulevardier", "martini"]);
 
-        // Pools filtern
-         const allAlcs = Object.entries(recipes).filter(([id, r]) => r.category !== "Zero Proof" && !r.isSlushOnly && !r.batchOnly);
+        const allAlcs = Object.entries(recipes).filter(([id, r]) => r.category !== "Zero Proof" && !r.batchOnly);
         const hhPool = allAlcs.filter(([id]) => !happyHourBlocked.has(id));
-        const virgins = Object.entries(recipes).filter(([id, r]) => r.category === "Zero Proof" && !r.isSlushOnly && !r.batchOnly);
+        const virgins = Object.entries(recipes).filter(([id, r]) => r.category === "Zero Proof" && !r.batchOnly);
 
         if (hhPool.length < 3) return null;
-
         const shuffledHH = shuffleArray(hhPool);
         
         return {
@@ -2003,95 +1990,68 @@
           <ul><li>${formatRecipeTitleById(selection.cocktailOfTheEvening)}</li></ul>
         </div>
       `;
-      specialExportOutput.textContent = `{
-        happyHourAlcoholic: ["${selection.happyHourAlcoholic[0]}", "${selection.happyHourAlcoholic[1]}", "${selection.happyHourAlcoholic[2]}"],
-        happyHourVirgin: "${selection.happyHourVirgin}",
-        cocktailOfTheEvening: "${selection.cocktailOfTheEvening}"
-      }`;
+      specialExportOutput.textContent = JSON.stringify(selection, null, 2);
     }
 
     function buildBatchOptions() {
         batchRecipeSelect.innerHTML = Object.entries(recipes)
-            .filter(([, r]) => r.batchable !== false) // <-- WICHTIG: Filtern der Batch-Auswahl
+            .filter(([, r]) => r.batchable !== false)
             .sort((a, b) => a[1].title.localeCompare(b[1].title, "de"))
             .map(([id, r]) => `<option value="${id}">${r.title}</option>`).join("");
     }
 
-    if (generateFourWeeksBtn) {
-      generateFourWeeksBtn.onclick = () => {
-        generateFourWeekPreview();
-        specialGeneratorOverlay.classList.add("active");
-      };
-    }
+    // Event Handler für Buttons
+    openIngredientsBtn.onclick = () => {
+        overlayTableBody.innerHTML = Object.values(recipes)
+            .filter(r => !r.batchOnly)
+            .sort((a, b) => a.title.localeCompare(b.title, "de"))
+            .map(r => `<tr><td>${r.title}</td><td>${r.ingredients.map(ingredientToText).join(", ")}</td></tr>`)
+            .join("");
+        overlay.classList.add("active");
+    };
 
-    // ==========================================
-    // 7. EVENT LISTENER & INITIALISIERUNG
-    // ==========================================
-    
-    // Die Generator-Aktion
-    const runSpecialGenerator = () => {
+    closeIngredientsBtn.onclick = () => overlay.classList.remove("active");
+
+    openSpecialGeneratorBtn.onclick = () => {
+        const selection = generateSpecialSelection();
+        renderSpecialSelection(selection);
+        specialGeneratorOverlay.classList.add("active");
+    };
+
+    closeSpecialGeneratorBtn.onclick = () => specialGeneratorOverlay.classList.remove("active");
+
+    generateSpecialsBtn.onclick = () => {
         const selection = generateSpecialSelection();
         renderSpecialSelection(selection);
     };
 
-    if (generateSpecialsBtn) {
-      generateSpecialsBtn.onclick = runSpecialGenerator;
-    }
+    copySpecialsBtn.onclick = async () => {
+        const text = specialExportOutput.textContent.trim();
+        if (!text) return;
+        await navigator.clipboard.writeText(text);
+        copySpecialsBtn.textContent = "Kopiert!";
+        setTimeout(() => { copySpecialsBtn.textContent = "TXT kopieren"; }, 1500);
+    };
 
-    // Button-Events zuweisen
-    if (openSpecialGeneratorBtn) {
-        openSpecialGeneratorBtn.onclick = () => {
-            runSpecialGenerator();
-            specialGeneratorOverlay.classList.add("active");
-        };
-    }
-
-    if (closeSpecialGeneratorBtn) {
-        closeSpecialGeneratorBtn.onclick = () => specialGeneratorOverlay.classList.remove("active");
-    }
-
-    if (copySpecialsBtn) {
-        copySpecialsBtn.onclick = async () => {
-            const text = specialExportOutput.textContent.trim();
-            if (!text) return;
-            await navigator.clipboard.writeText(text);
-            copySpecialsBtn.textContent = "Kopiert!";
-            setTimeout(() => { copySpecialsBtn.textContent = "TXT kopieren"; }, 1500);
-        };
-    }
-
-    // Inhaltsliste Overlay
-    if (openIngredientsBtn) {
-        openIngredientsBtn.onclick = () => {
-          overlayTableBody.innerHTML = Object.values(recipes)
-    .filter(r => !r.batchOnly) // <-- Filtert reine Batch-Rezepte heraus
-    .sort((a, b) => a.title.localeCompare(b.title, "de"))
-    .map(r => `<tr><td>${r.title}</td><td>${r.ingredients.map(ingredientToText).join("\n")}</td></tr>`)
-    .join("");
-            overlay.classList.add("active");
-        };
-    }
-    
-    if (closeIngredientsBtn) {
-        closeIngredientsBtn.onclick = () => overlay.classList.remove("active");
-    }
-
-    // Schließen bei Klick auf Hintergrund
     window.onclick = (event) => {
         if (event.target === overlay) overlay.classList.remove("active");
         if (event.target === specialGeneratorOverlay) specialGeneratorOverlay.classList.remove("active");
+        // Schließe Vorschläge bei Klick außerhalb
+        if (!event.target.closest('.search-box')) {
+            searchSuggestions.classList.remove("active");
+        }
     };
 
     searchInput.addEventListener("input", filterCocktails);
-    batchRecipeSelect.addEventListener("change", updateBatchUI); // Geändert!
+    batchRecipeSelect.addEventListener("change", updateBatchUI);
     batchCustomInput.addEventListener("input", renderBatchCalculator);
 
-    // App starten
+    // App initialisieren
     buildBatchOptions();
     batchRecipeSelect.value = "whiskey-sour";
-    showRecipe("long-island");
+    showRecipe("whiskey-sour");
     filterCocktails();
-    updateBatchUI(); // Geändert: Lädt UI korrekt initial
+    updateBatchUI();
 
   </script>
 </body>
