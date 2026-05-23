@@ -1923,30 +1923,46 @@
     // Specials Logik
     const FOUR_WEEK_SPECIALS = [
       {
-        date: "Samstag, 02.05.2026",
-        happyHourAlcoholic: ["tequila-sunrise", "cuba-libre", "blue-lagoon"],
-        happyHourVirgin: "ipanema",
-        cocktailOfTheEvening: "whiskey-sour"
-      },
-      {
-        date: "Samstag, 09.05.2026",
-        happyHourAlcoholic: ["melon-sour", "blue-lagoon", "pina-colada"],
-        happyHourVirgin: "maracuja-mule",
-        cocktailOfTheEvening: "espresso-martini"
-      },
-      {
-        date: "Samstag, 16.05.2026",
-        happyHourAlcoholic: ["bahama-mama", "gin-fizz", "sex-on-the-beach"],
-        happyHourVirgin: "virgin-colada",
-        cocktailOfTheEvening: "pisco-sour"
-      },
-      {
         date: "Samstag, 23.05.2026",
-        happyHourAlcoholic: ["touchdown", "solero", "pina-colada"],
-        happyHourVirgin: "Miami",
-        cocktailOfTheEvening: "margarita"
-      }
-    ];
+         "happyHourAlcoholic": [
+    "gin-fizz",
+    "tequila-sunrise",
+    "bahama-mama"
+  ],
+  "happyHourVirgin": "ipanema",
+  "cocktailOfTheEvening": "pisco-sour"
+},
+      {
+        date: "Samstag, 30.05.2026",
+         "happyHourAlcoholic": [
+    "moscow-mule",
+    "solero",
+    "gin-fizz"
+  ],
+  "happyHourVirgin": "maracuja-mule",
+  "cocktailOfTheEvening": "paloma"
+},
+      {
+        date: "Samstag, 06.06.2026",
+        "happyHourAlcoholic": [
+    "espresso-martini",
+    "touchdown",
+    "cuba-libre"
+  ],
+  "happyHourVirgin": "maracuja-mule",
+  "cocktailOfTheEvening": "touchdown"
+},
+      {
+        date: "Samstag, 13.06.2026",
+       "happyHourAlcoholic": [
+    "blue-lagoon",
+    "gin-fizz",
+    "tequila-sunrise"
+  ],
+  "happyHourVirgin": "virgin-colada",
+  "cocktailOfTheEvening": "cuba-libre"
+}
+];
     
     function pickRandom(arr) { 
         return arr && arr.length ? arr[Math.floor(Math.random() * arr.length)] : null; 
