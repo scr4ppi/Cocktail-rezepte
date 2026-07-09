@@ -1946,47 +1946,27 @@
     });
 
     // Specials Logik
-    const FOUR_WEEK_SPECIALS = [
-      {
-        date: "Samstag, 23.05.2026",
-         "happyHourAlcoholic": [
-    "gin-fizz",
-    "tequila-sunrise",
-    "bahama-mama"
-  ],
-  "happyHourVirgin": "ipanema",
-  "cocktailOfTheEvening": "pisco-sour"
-},
-      {
-        date: "Samstag, 30.05.2026",
-         "happyHourAlcoholic": [
-    "moscow-mule",
-    "solero",
-    "gin-fizz"
-  ],
-  "happyHourVirgin": "maracuja-mule",
-  "cocktailOfTheEvening": "paloma"
-},
-      {
-        date: "Samstag, 06.06.2026",
-        "happyHourAlcoholic": [
-    "espresso-martini",
-    "touchdown",
-    "cuba-libre"
-  ],
-  "happyHourVirgin": "maracuja-mule",
-  "cocktailOfTheEvening": "melon-sour"
-},
-      {
-        date: "Samstag, 13.06.2026",
-       "happyHourAlcoholic": [
-    "blue-lagoon",
-    "gin-fizz",
-    "tequila-sunrise"
-  ],
-  "happyHourVirgin": "virgin-colada",
-  "cocktailOfTheEvening": "cuba-libre"
-}
+   const FOUR_WEEK_SPECIALS = [
+  {
+    "happyHourAlcoholic": ["touchdown", "pina-colada", "frozen-aperol"],
+    "happyHourVirgin": "maracuja-mule",
+    "cocktailOfTheEvening": "frozen-aperol"
+  },
+  {
+    "happyHourAlcoholic": ["pina-colada", "cuba-libre", "bahama-mama"],
+    "happyHourVirgin": "virgin-colada",
+    "cocktailOfTheEvening": "blue-lagoon"
+  },
+  {
+    "happyHourAlcoholic": ["gin-fizz", "sex-on-the-beach", "frozen-daiquiri"],
+    "happyHourVirgin": "maracuja-mule",
+    "cocktailOfTheEvening": "pisco-sour"
+  },
+  {
+    "happyHourAlcoholic": ["espresso-martini", "melon-sour", "gin-fizz"],
+    "happyHourVirgin": "virgin-colada",
+    "cocktailOfTheEvening": "solero"
+  }
 ];
     
     function pickRandom(arr) { 
@@ -2052,19 +2032,46 @@
       specialExportOutput.textContent = JSON.stringify(selection, null, 2);
     }
 
-    function generateFourWeekPreview() {
-      specialSelectionPreview.innerHTML = FOUR_WEEK_SPECIALS.map((selection, index) => `
-        <div class="special-preview-group">
-          <strong>Woche ${index + 1} · ${selection.date}</strong>
-          <ul>
-            <li>Happy Hour: ${selection.happyHourAlcoholic.map(formatRecipeTitleById).join(", ")}</li>
-            <li>Virgin: ${formatRecipeTitleById(selection.happyHourVirgin)}</li>
-            <li>Cocktail des Abends: ${formatRecipeTitleById(selection.cocktailOfTheEvening)}</li>
-          </ul>
-        </div>
-      `).join("");
-      specialExportOutput.textContent = JSON.stringify(FOUR_WEEK_SPECIALS, null, 2);
-    }
+   function generateFourWeekPreview() {
+  const startDate = new Date(`${ROTATION_START}T00:00:00Z`);
+  const now = new Date();
+  
+  // Finde die aktuelle Wochen-Position in der Rotation
+  const diffMs = now - startDate;
+  const currentWeekIndex = Math.floor(diffMs / (7 * 24 * 60 * 60 * 1000));
+  
+  let html = "";
+  let exportData = [];
+
+  for (let i = 0; i < 4; i++) {
+    // Welches Wochen-Paket ist dran?
+    const weekIndex = (currentWeekIndex + i) % FOUR_WEEK_SPECIALS.length;
+    const selection = FOUR_WEEK_SPECIALS[weekIndex];
+    
+    // Berechne das Datum für den jeweiligen Samstag
+    // Wir addieren die Wochen-Differenz auf das Startdatum
+    const targetDate = new Date(startDate.getTime() + ((currentWeekIndex + i) * 7 * 24 * 60 * 60 * 1000));
+    const dateString = targetDate.toLocaleDateString("de-DE", { 
+        weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' 
+    });
+
+    html += `
+      <div class="special-preview-group">
+        <strong>Woche ${i + 1} · ${dateString}</strong>
+        <ul>
+          <li>Happy Hour: ${selection.happyHourAlcoholic.map(formatRecipeTitleById).join(", ")}</li>
+          <li>Virgin: ${formatRecipeTitleById(selection.happyHourVirgin)}</li>
+          <li>Cocktail des Abends: ${formatRecipeTitleById(selection.cocktailOfTheEvening)}</li>
+        </ul>
+      </div>
+    `;
+    
+    exportData.push({ date: dateString, ...selection });
+  }
+
+  specialSelectionPreview.innerHTML = html;
+  specialExportOutput.textContent = JSON.stringify(exportData, null, 2);
+}
 
     function buildBatchOptions() {
         batchRecipeSelect.innerHTML = Object.entries(recipes)
