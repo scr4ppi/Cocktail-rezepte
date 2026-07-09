@@ -2066,7 +2066,10 @@
       </div>
     `;
     
-    exportData.push({ date: dateString, ...selection });
+exportData.push({
+    date: dateString,
+    selection: selection
+});
   }
 
   specialSelectionPreview.innerHTML = html;
