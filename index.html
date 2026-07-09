@@ -2048,7 +2048,7 @@
 
   for (let i = 0; i < 4; i++) {
     // Welches Wochen-Paket ist dran?
-    const weekIndex = (currentWeekIndex + i) % FOUR_WEEK_SPECIALS.length;
+    const weekIndex = (((currentWeekIndex + i) % FOUR_WEEK_SPECIALS.length) + FOUR_WEEK_SPECIALS.length) % FOUR_WEEK_SPECIALS.length;
     const selection = FOUR_WEEK_SPECIALS[weekIndex];
     
     // Berechne das Datum für den jeweiligen Samstag
