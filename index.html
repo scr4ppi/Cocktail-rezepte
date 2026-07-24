@@ -1948,6 +1948,7 @@
 
     // Specials Logik
 // Specials Logik
+    // Specials Logik
     const FOUR_WEEK_SPECIALS = [
       {
         "happyHourAlcoholic": ["pina-colada", "cuba-libre", "bahama-mama"],
@@ -1971,7 +1972,7 @@
       }
     ];
 
-const ROTATION_START = "2026-07-11"; // Wieder auf das Startdatum der Hauptseite setzen!
+    const ROTATION_START = "2026-07-11"; 
     
     function pickRandom(arr) { 
         return arr && arr.length ? arr[Math.floor(Math.random() * arr.length)] : null; 
@@ -1990,22 +1991,63 @@ const ROTATION_START = "2026-07-11"; // Wieder auf das Startdatum der Hauptseite
       return recipes[id] ? recipes[id].title : id;
     }
 
-    // ... (generateSpecialSelection und renderSpecialSelection bleiben wie sie sind) ...
+    function generateSpecialSelection() {
+        const happyHourBlocked = new Set([
+            "mai-tai", "long-island", "zombie", "mojito", "pornstar-martini",
+            "negroni", "whiskey-sour", "pisco-sour", "paloma", "caipirinha",
+            "boulevardier", "martini", "new-york-sour"
+        ]);
+
+        const eveningBlocked = new Set([ "long-island", "mojito", "new-york-sour", "caipirinha", "negroni", "boulevardier", "martini"]);
+
+        const allAlcs = Object.entries(recipes).filter(([id, r]) => r.category !== "Zero Proof" && !r.batchOnly);
+        const hhPool = allAlcs.filter(([id]) => !happyHourBlocked.has(id));
+        const virgins = Object.entries(recipes).filter(([id, r]) => r.category === "Zero Proof" && !r.batchOnly);
+
+        if (hhPool.length < 3) return null;
+        const shuffledHH = shuffleArray(hhPool);
+        
+        return {
+            happyHourAlcoholic: [shuffledHH[0][0], shuffledHH[1][0], shuffledHH[2][0]],
+            happyHourVirgin: pickRandom(virgins)?.[0] || "ipanema",
+            cocktailOfTheEvening: pickRandom(allAlcs.filter(([id]) => !eveningBlocked.has(id)))?.[0] || "touchdown"
+        };
+    }
+
+    function renderSpecialSelection(selection) {
+      if (!selection) {
+        specialSelectionPreview.innerHTML = "Fehler: Zu wenig Cocktails im Pool.";
+        return;
+      }
+
+      specialSelectionPreview.innerHTML = `
+        <div class="special-preview-group">
+          <strong>Happy Hour (Alkoholisch)</strong>
+          <ul>${selection.happyHourAlcoholic.map(id => `<li>${formatRecipeTitleById(id)}</li>`).join("")}</ul>
+        </div>
+        <div class="special-preview-group">
+          <strong>Happy Hour (Virgin)</strong>
+          <ul><li>${formatRecipeTitleById(selection.happyHourVirgin)}</li></ul>
+        </div>
+        <div class="special-preview-group">
+          <strong>Cocktail des Abends</strong>
+          <ul><li>${formatRecipeTitleById(selection.cocktailOfTheEvening)}</li></ul>
+        </div>
+      `;
+      specialExportOutput.textContent = JSON.stringify(selection, null, 2);
+    }
 
     function generateFourWeekPreview() {
-      // Wir setzen die Uhrzeit auf 12:00 Uhr mittags, um nervige Zeitzonen-Bugs zu vermeiden
       const startDate = new Date(`${ROTATION_START}T12:00:00`);
       
       const now = new Date();
       now.setHours(12, 0, 0, 0);
 
-      // Der "Freitags-Trick" aus deiner Hauptseite:
-      // Wenn heute Freitag (Tag 5) ist, tun wir für die Berechnung so, als wäre schon Samstag.
+      // Freitags-Trick: Freitag (Tag 5) wird als Samstag gewertet
       if (now.getDay() === 5) {
         now.setDate(now.getDate() + 1);
       }
       
-      // Finde die aktuelle Wochen-Position in der Rotation
       const diffMs = now.getTime() - startDate.getTime();
       const currentWeekIndex = Math.floor(diffMs / (7 * 24 * 60 * 60 * 1000));
       
@@ -2013,14 +2055,10 @@ const ROTATION_START = "2026-07-11"; // Wieder auf das Startdatum der Hauptseite
       let exportData = [];
 
       for (let i = 0; i < 4; i++) {
-        // Welcher absolute Index ist das (z.B. Woche 14 seit Start)
         const absoluteIndex = currentWeekIndex + i;
-        
-        // Welches Array-Paket (0 bis 3) ist das?
         const arrayIndex = ((absoluteIndex % FOUR_WEEK_SPECIALS.length) + FOUR_WEEK_SPECIALS.length) % FOUR_WEEK_SPECIALS.length;
         const selection = FOUR_WEEK_SPECIALS[arrayIndex];
         
-        // Berechne das exakte Datum für diesen Samstag
         const targetDate = new Date(startDate.getTime() + (absoluteIndex * 7 * 24 * 60 * 60 * 1000));
         const dateString = targetDate.toLocaleDateString("de-DE", { 
             weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' 
@@ -2046,67 +2084,6 @@ const ROTATION_START = "2026-07-11"; // Wieder auf das Startdatum der Hauptseite
       specialSelectionPreview.innerHTML = html;
       specialExportOutput.textContent = JSON.stringify(exportData, null, 2);
     }
-
-      specialSelectionPreview.innerHTML = `
-        <div class="special-preview-group">
-          <strong>Happy Hour (Alkoholisch)</strong>
-          <ul>${selection.happyHourAlcoholic.map(id => `<li>${formatRecipeTitleById(id)}</li>`).join("")}</ul>
-        </div>
-        <div class="special-preview-group">
-          <strong>Happy Hour (Virgin)</strong>
-          <ul><li>${formatRecipeTitleById(selection.happyHourVirgin)}</li></ul>
-        </div>
-        <div class="special-preview-group">
-          <strong>Cocktail des Abends</strong>
-          <ul><li>${formatRecipeTitleById(selection.cocktailOfTheEvening)}</li></ul>
-        </div>
-      `;
-      specialExportOutput.textContent = JSON.stringify(selection, null, 2);
-    }
-
-   function generateFourWeekPreview() {
-  const startDate = new Date(`${ROTATION_START}T00:00:00Z`);
-  const now = new Date();
-  
-  // Finde die aktuelle Wochen-Position in der Rotation
-  const diffMs = now - startDate;
-  const currentWeekIndex = Math.floor(diffMs / (7 * 24 * 60 * 60 * 1000));
-  
-  let html = "";
-  let exportData = [];
-
-  for (let i = 0; i < 4; i++) {
-    // Welches Wochen-Paket ist dran?
-    const weekIndex = (((currentWeekIndex + i) % FOUR_WEEK_SPECIALS.length) + FOUR_WEEK_SPECIALS.length) % FOUR_WEEK_SPECIALS.length;
-    const selection = FOUR_WEEK_SPECIALS[weekIndex];
-    
-    // Berechne das Datum für den jeweiligen Samstag
-    // Wir addieren die Wochen-Differenz auf das Startdatum
-    const targetDate = new Date(startDate.getTime() + ((currentWeekIndex + i) * 7 * 24 * 60 * 60 * 1000));
-    const dateString = targetDate.toLocaleDateString("de-DE", { 
-        weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' 
-    });
-
-    html += `
-      <div class="special-preview-group">
-        <strong>Woche ${i + 1} · ${dateString}</strong>
-        <ul>
-          <li>Happy Hour: ${selection.happyHourAlcoholic.map(formatRecipeTitleById).join(", ")}</li>
-          <li>Virgin: ${formatRecipeTitleById(selection.happyHourVirgin)}</li>
-          <li>Cocktail des Abends: ${formatRecipeTitleById(selection.cocktailOfTheEvening)}</li>
-        </ul>
-      </div>
-    `;
-    
-exportData.push({
-    date: dateString,
-    selection: selection
-});
-  }
-
-  specialSelectionPreview.innerHTML = html;
-  specialExportOutput.textContent = JSON.stringify(exportData, null, 2);
-}
 
     function buildBatchOptions() {
         batchRecipeSelect.innerHTML = Object.entries(recipes)
